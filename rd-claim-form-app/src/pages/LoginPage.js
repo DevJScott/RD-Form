@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,41 +19,25 @@ const LoginPage = () => {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.error || "Login failed");
-        return;
-      }
+      if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // Save token to localStorage or context
       localStorage.setItem("token", data.token);
-      alert("Login successful!");
-      // redirect user here if needed
-
+      navigate("/claim");
     } catch (err) {
-      setError("Something went wrong");
+      setError(err.message);
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <div className="login-container">
       <h2>Login</h2>
+      <form onSubmit={handleLogin}>
+        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" required />
+        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <input
-        type="email"
-        value={email}
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
+    </div>
   );
 };
 
