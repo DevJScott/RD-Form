@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import ClaimApp from "./components/ClaimApp"; // You must create this file!
 import "./index.css";
 
@@ -102,10 +103,11 @@ function App() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  return (
+   return (
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} /> {/* ✅ Added this */}
         <Route
           path="/claim"
           element={
@@ -122,5 +124,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;
