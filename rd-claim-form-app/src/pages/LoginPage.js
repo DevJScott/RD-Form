@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/auth.css";
+import "../styles/auth.css"; // ✅ Make sure this file exists!
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,7 +14,9 @@ const LoginPage = () => {
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -22,10 +24,11 @@ const LoginPage = () => {
 
       if (!res.ok) throw new Error(data.message || "Login failed");
 
+      // ✅ Store token and navigate
       localStorage.setItem("token", data.token);
       navigate("/claim");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Something went wrong");
     }
   };
 
@@ -33,11 +36,23 @@ const LoginPage = () => {
     <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
-        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" required />
-        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" required />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          required
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          required
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <button type="submit">Login</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 };
