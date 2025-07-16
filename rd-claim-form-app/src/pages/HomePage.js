@@ -1,17 +1,22 @@
 import { useNavigate } from "react-router-dom";
+import "../styles/home.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
 
   return (
     <div className="home-container">
-      <h2>Welcome to Your R&D Dashboard</h2>
-      <div className="home-actions">
-        <button onClick={() => navigate("/claim")}>➕ Start New Claim</button>
-        <button onClick={() => alert("Feature not implemented yet")}>📁 View Past Claims</button>
-        <button onClick={() => alert("Feature not implemented yet")}>👥 View Clients</button>
-        <button onClick={() => alert("Feature not implemented yet")}>📝 Unfinished Claims</button>
-      </div>
+      <header>
+        <h1>Welcome Back 🎉</h1>
+        <p>Select an action below:</p>
+      </header>
+
+      <main className="button-grid">
+        <button onClick={() => navigate("/claim")}>➕ New Claim</button>
+        <button onClick={() => navigate("/claims")}>📂 View All Claims</button>
+        <button onClick={() => navigate("/unfinished")}>📝 Unfinished Claims</button>
+        <button onClick={() => navigate("/clients")}>👥 Client Info</button>
+      </main>
     </div>
   );
 };

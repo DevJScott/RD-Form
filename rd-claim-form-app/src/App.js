@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import HomePage from "./pages/HomePage"; // ✅ New import
 import ClaimApp from "./components/ClaimApp";
+import HomePage from "./pages/HomePage";
+import PrivateRoute from "./components/PrivateRoute"; // ✅ new
 
 function App() {
   return (
@@ -10,11 +11,14 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/home" element={<HomePage />} />         {/* ✅ Home route */}
-        <Route path="/claim" element={<ClaimApp />} />
+
+        {/* ⛔ Only allow access with token */}
+        <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+        <Route path="/claim" element={<PrivateRoute><ClaimApp /></PrivateRoute>} />
+
+        {/* Optional future protected pages */}
+        {/* <Route path="/claims" element={<PrivateRoute><ClaimsPage /></PrivateRoute>} /> */}
       </Routes>
     </Router>
   );
 }
-
-export default App;
