@@ -2,7 +2,11 @@ const Claim = require("../models/Claim");
 
 exports.createClaim = async (req, res) => {
   try {
-    const claim = new Claim(req.body);
+    const claim = new Claim({
+      ...req.body,
+      userId: req.user._id,
+      isComplete: false,
+    });
     await claim.save();
     res.status(201).json(claim);
   } catch (err) {
@@ -21,7 +25,7 @@ exports.getAllClaims = async (req, res) => {
 
 exports.getUserClaims = async (req, res) => {
   try {
-    const claims = await Claim.find({ userId: req.params.userId });
+    const claims = await Claim.find({ userId: req.user._id });
     res.json(claims);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch user's claims" });
@@ -30,7 +34,7 @@ exports.getUserClaims = async (req, res) => {
 
 exports.getUnfinishedClaims = async (req, res) => {
   try {
-    const claims = await Claim.find({ userId: req.params.userId, isComplete: false });
+    const claims = await Claim.find({ userId: req.user._id, isComplete: false });
     res.json(claims);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch unfinished claims" });
