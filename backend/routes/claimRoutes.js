@@ -1,22 +1,21 @@
-const express = require("express");
-const router = express.Router();
-const {
-  createClaim,
-  getAllClaims,
-  getUserClaims,
-  getUnfinishedClaims
-} = require("../controllers/claimController");
+const jwt = require("jsonwebtoken");
 
-// Create new claim
-router.post("/", createClaim);
+const authenticate = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-// Get all claims (for admin or dashboard view)
-router.get("/", getAllClaims);
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized - No token" });
+  }
 
-// Get all claims by a specific user
-router.get("/user/:userId", getUserClaims);
+  const token = authHeader.split(" ")[1];
 
-// ✅ Get unfinished claims for a specific user
-router.get("/unfinished/:userId", getUnfinishedClaims);
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = { _id: decoded.userId }; // 👈 Keep it lightweight
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Token invalid or expired" });
+  }
+};
 
-module.exports = router;
+module.exports = authenticate;

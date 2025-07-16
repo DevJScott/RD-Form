@@ -4,7 +4,7 @@ import RegisterPage from "./pages/RegisterPage";
 import ClaimApp from "./components/ClaimApp";
 import HomePage from "./pages/HomePage";
 import PrivateRoute from "./components/PrivateRoute"; // ✅ new
-
+import ClaimsPage from "./pages/ClaimsPage";
 function App() {
   return (
     <Router>
@@ -15,6 +15,7 @@ function App() {
         {/* ⛔ Only allow access with token */}
         <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
         <Route path="/claim" element={<PrivateRoute><ClaimApp /></PrivateRoute>} />
+        <Route path="/claims" element={<PrivateRoute><ClaimsPage /></PrivateRoute>} />
 
         {/* Optional future protected pages */}
         {/* <Route path="/claims" element={<PrivateRoute><ClaimsPage /></PrivateRoute>} /> */}
@@ -22,3 +23,4 @@ function App() {
     </Router>
   );
 }
+export default App;
