@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/auth.css";
 
 const RegisterPage = () => {
@@ -50,6 +50,10 @@ const RegisterPage = () => {
         <button type="submit">Register</button>
       </form>
       {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <p style={{ marginTop: "1rem" }}>
+        Already have an account? <Link to="/">Login here</Link>
+      </p>
     </div>
   );
 };

@@ -26,7 +26,7 @@ const LoginPage = () => {
 
       // ✅ Store token and navigate
       localStorage.setItem("token", data.token);
-      navigate("/claim");
+      navigate("/home");
     } catch (err) {
       setError(err.message || "Something went wrong");
     }

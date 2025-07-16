@@ -2,26 +2,37 @@ const Claim = require("../models/Claim");
 
 exports.createClaim = async (req, res) => {
   try {
-    const { formData, isDraft, clientId } = req.body;
-
-    const newClaim = new Claim({
-      formData,
-      isDraft: isDraft ?? true,
-      client: clientId,
-    });
-
-    const saved = await newClaim.save();
-    res.status(201).json(saved);
+    const claim = new Claim(req.body);
+    await claim.save();
+    res.status(201).json(claim);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ error: "Error creating claim" });
   }
 };
 
-exports.getClaims = async (req, res) => {
+exports.getAllClaims = async (req, res) => {
   try {
-    const claims = await Claim.find().populate("client");
-    res.status(200).json(claims);
+    const claims = await Claim.find();
+    res.json(claims);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Failed to fetch all claims" });
+  }
+};
+
+exports.getUserClaims = async (req, res) => {
+  try {
+    const claims = await Claim.find({ userId: req.params.userId });
+    res.json(claims);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch user's claims" });
+  }
+};
+
+exports.getUnfinishedClaims = async (req, res) => {
+  try {
+    const claims = await Claim.find({ userId: req.params.userId, isComplete: false });
+    res.json(claims);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch unfinished claims" });
   }
 };
