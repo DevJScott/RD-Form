@@ -16,8 +16,6 @@ const HomePage = () => {
         <button onClick={() => navigate("/claims")}>📂 View All Claims</button>
         <button onClick={() => navigate("/unfinished")}>📝 Unfinished Claims</button>
         <button onClick={() => navigate("/clients")}>👥 Client Info</button>
-        <button onClick={() => navigate("/claims")}>📂 View All Claims</button>
-
       </main>
     </div>
   );
