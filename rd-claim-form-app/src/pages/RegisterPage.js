@@ -22,7 +22,7 @@ const RegisterPage = () => {
 
       if (!res.ok) throw new Error(data.message || "Registration failed");
 
-      alert("Registration successful! You can now log in.");
+      alert("🎉 Registration successful! You can now log in.");
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -30,28 +30,28 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="register-container">
+    <div className="auth-container">
       <h2>Register</h2>
       <form onSubmit={handleRegister}>
         <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
           type="email"
           placeholder="Email"
+          value={email}
           required
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           type="password"
           placeholder="Password"
+          value={password}
           required
+          onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Register</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
 
-      <p style={{ marginTop: "1rem" }}>
+      <p>
         Already have an account? <Link to="/">Login here</Link>
       </p>
     </div>

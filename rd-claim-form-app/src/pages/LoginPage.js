@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../styles/auth.css"; // ✅ Make sure this file exists!
+import { useNavigate, Link } from "react-router-dom";
+import "../styles/auth.css";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,9 +14,7 @@ const LoginPage = () => {
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
@@ -24,7 +22,6 @@ const LoginPage = () => {
 
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // ✅ Store token and navigate
       localStorage.setItem("token", data.token);
       navigate("/home");
     } catch (err) {
@@ -33,7 +30,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="auth-container">
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <input
@@ -53,6 +50,10 @@ const LoginPage = () => {
         <button type="submit">Login</button>
       </form>
       {error && <p className="error-message">{error}</p>}
+
+      <p>
+        Don’t have an account? <Link to="/register">Register here</Link>
+      </p>
     </div>
   );
 };
