@@ -8,27 +8,37 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+ const handleRegister = async (e) => {
+  e.preventDefault();
 
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
 
-      const data = await res.json();
+  if (!email.includes("@")) {
+    setError("Please enter a valid email address.");
+    return;
+  }
 
-      if (!res.ok) throw new Error(data.message || "Registration failed");
+  if (password.length < 6) {
+    setError("Password must be at least 6 characters long.");
+    return;
+  }
 
-      alert("🎉 Registration successful! You can now log in.");
-      navigate("/");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "Registration failed");
+
+    alert("🎉 Registration successful! You can now log in.");
+    navigate("/");
+  } catch (err) {
+    setError(err.message);
+  }
+};
   return (
     <div className="auth-container">
       <h2>Register</h2>

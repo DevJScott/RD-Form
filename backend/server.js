@@ -8,7 +8,13 @@ const clientRoutes = require("./routes/clientRoutes");
 const authRoutes = require("./routes/authRoutes");
 
 const app = express();
-app.use(cors());
+
+// ✅ CORS: only allow frontend origin
+app.use(cors({
+  origin: "http://localhost:3000", // Replace with your frontend origin
+  credentials: true,
+}));
+
 app.use(express.json());
 
 app.use("/api/claims", claimRoutes);
@@ -20,7 +26,7 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 })
   .then(() => {
-    console.log("MongoDB connected");
-    app.listen(5000, () => console.log("Server running on port 5000"));
+    console.log("✅ MongoDB connected");
+    app.listen(5000, () => console.log("🚀 Server running on port 5000"));
   })
-  .catch(err => console.error(err));
+  .catch(err => console.error("❌ MongoDB connection error:", err));

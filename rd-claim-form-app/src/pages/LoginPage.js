@@ -7,9 +7,12 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ Step 3: loading state
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
@@ -20,12 +23,17 @@ const LoginPage = () => {
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      if (!res.ok) {
+        if (data.message) throw new Error(data.message);
+        throw new Error("Login failed. Please check your credentials.");
+      }
 
       localStorage.setItem("token", data.token);
       navigate("/home");
     } catch (err) {
       setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false); // ✅ Reset loading state
     }
   };
 
@@ -47,7 +55,9 @@ const LoginPage = () => {
           required
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
       </form>
       {error && <p className="error-message">{error}</p>}
 
