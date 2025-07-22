@@ -6,7 +6,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // 👁️
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const handleRegister = async (e) => {
@@ -52,21 +52,22 @@ const RegisterPage = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <div className="password-wrapper">
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          value={password}
+          required
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <label className="show-password">
           <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            required
-            onChange={(e) => setPassword(e.target.value)}
+            type="checkbox"
+            checked={showPassword}
+            onChange={() => setShowPassword((prev) => !prev)}
           />
-          <span
-            className="toggle-password"
-            onClick={() => setShowPassword((prev) => !prev)}
-          >
-            {showPassword ? "Hide" : "Show"}
-          </span>
-        </div>
+          Show password
+        </label>
 
         <button type="submit">Register</button>
       </form>

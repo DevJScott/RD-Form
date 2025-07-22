@@ -1,5 +1,5 @@
 import React from "react";
-import jsPDF from "jspdf";
+import { generateNarrativePDF } from "../utils/pdfGenerator"; // ✅ Correct import
 
 // Optional: Map field keys to human-readable labels
 const labels = {
@@ -63,33 +63,6 @@ function Step6Summary({ formData, onBack }) {
     ]
   };
 
-  const generatePDFReport = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(12);
-
-    let y = 10;
-    Object.entries(groupedSections).forEach(([section, keys]) => {
-      doc.setFont(undefined, "bold");
-      doc.text(section, 10, y);
-      y += 8;
-      doc.setFont(undefined, "normal");
-
-      keys.forEach((key) => {
-        const line = formatField(key, formData[key]);
-        if (y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-        doc.text(line, 10, y);
-        y += 8;
-      });
-
-      y += 5;
-    });
-
-    doc.save("rd-claim-summary.pdf");
-  };
-
   const generateTextReport = () => {
     let textContent = "";
 
@@ -133,7 +106,6 @@ function Step6Summary({ formData, onBack }) {
       }
 
       alert("✅ Claim submitted successfully!");
-      // Optional: redirect to dashboard or clear form
     } catch (err) {
       alert("❌ Network error: " + err.message);
     }
@@ -162,14 +134,13 @@ function Step6Summary({ formData, onBack }) {
       ))}
 
       <div style={{ marginTop: "20px" }}>
-        <button onClick={generatePDFReport}>📄 Download PDF</button>{" "}
-        <button onClick={generateTextReport}>📄 Download TXT</button>{" "}
-        <button onClick={handleSubmitToBackend}>🚀 Submit Claim</button>{" "}
+        <button onClick={() => generateNarrativePDF(formData)}>📄 Download Full R&D Report</button>
+        <button onClick={generateTextReport}>📄 Download TXT</button>
+        <button onClick={handleSubmitToBackend}>🚀 Submit Claim</button>
         <button onClick={onBack}>⬅ Back</button>
       </div>
     </div>
   );
 }
-
 
 export default Step6Summary;
