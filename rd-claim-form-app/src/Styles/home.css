@@ -1,9 +1,12 @@
-
-
 /* === Base Layout === */
 .home-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e1e1e, #922d2d);
+  background: radial-gradient(
+      ellipse at top left,
+      rgba(146, 45, 45, 0.3),
+      rgba(30, 30, 30, 0.95)
+    ),
+    #1e1e1e;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,6 +17,7 @@
   padding: 2rem;
   position: relative;
   overflow: hidden;
+  background-blend-mode: overlay;
 }
 
 /* === Logo Display === */
@@ -23,6 +27,16 @@
   margin-bottom: 2.5rem;
   animation: fadeIn 1s ease-in-out;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+}
+.top-left-logo {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  width: 120px;
+  max-width: 20vw;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  z-index: 10;
+  animation: fadeIn 1.2s ease-in-out;
 }
 
 /* === Title Heading === */
@@ -57,6 +71,25 @@ h1 {
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.button-group button::before,
+.logout-button::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #e63946, #ff6b6b, #e63946);
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  border-radius: 14px;
+  filter: blur(12px);
 }
 
 .button-group button:hover,
@@ -64,6 +97,11 @@ h1 {
   transform: translateY(-4px);
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+}
+
+.button-group button:hover::before,
+.logout-button:hover::before {
+  opacity: 0.4;
 }
 
 /* === Logout Button === */
@@ -76,8 +114,6 @@ h1 {
 .logout-button:hover {
   background-color: rgba(220, 60, 60, 0.3);
 }
-
-
 
 /* === Animation Keyframes === */
 @keyframes fadeInDown {
