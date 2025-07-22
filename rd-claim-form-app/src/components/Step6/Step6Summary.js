@@ -1,5 +1,6 @@
 import React from "react";
-import { generateNarrativePDF } from "../utils/pdfGenerator"; // ✅ Correct import
+import { generateNarrativePDF } from "../../utils/pdfGenerator";
+
 
 // Optional: Map field keys to human-readable labels
 const labels = {

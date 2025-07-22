@@ -101,24 +101,28 @@ export const generateNarrativePDF = async (formData) => {
     190
   ), 10, y); y += 20;
 
-  // Section 5: Expenditure
-  doc.setFont(undefined, "bold");
-  doc.text("5. Expenditure Summary", 10, y); y += 8;
-  autoTable(doc, {
-    startY: y,
-    styles: { fontSize: 10 },
-    head: [["Category", "Amount (£)"]],
-    body: [
-      ["Staff Cost", formData.totalStaffCost || "—"],
-      ["Software", formData.softwareTotal || "—"],
-      ["Volunteers", formData.volunteerCost || "—"],
-      ["Raw Materials", formData.rawMaterialCost || "—"],
-      ["Heat & Light", formData.heatLightTotalCost || "—"],
-      ["EPWs", formData.epwCost || "—"],
-      ["Subcontractors", formData.subcontractorCost || "—"],
-    ],
-  });
-  y = doc.previousAutoTable.finalY + 10;
+// Section 5: Expenditure
+doc.setFont(undefined, "bold");
+doc.text("5. Expenditure Summary", 10, y); y += 8;
+
+autoTable(doc, {
+  startY: y,
+  styles: { fontSize: 10 },
+  head: [["Category", "Amount (£)"]],
+  body: [
+    ["Staff Cost", formData.totalStaffCost || "—"],
+    ["Software", formData.softwareTotal || "—"],
+    ["Volunteers", formData.volunteerCost || "—"],
+    ["Raw Materials", formData.rawMaterialCost || "—"],
+    ["Heat & Light", formData.heatLightTotalCost || "—"],
+    ["EPWs", formData.epwCost || "—"],
+    ["Subcontractors", formData.subcontractorCost || "—"],
+  ],
+});
+
+// ✅ Safe access with fallback
+y = doc.previousAutoTable?.finalY ? doc.previousAutoTable.finalY + 10 : y + 10;
+
 
   // Section 6: Indirect Activities
   doc.setFont(undefined, "bold");
