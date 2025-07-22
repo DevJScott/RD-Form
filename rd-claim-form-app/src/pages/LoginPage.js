@@ -6,8 +6,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👁️
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ Step 3: loading state
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -33,7 +34,7 @@ const LoginPage = () => {
     } catch (err) {
       setError(err.message || "Something went wrong");
     } finally {
-      setLoading(false); // ✅ Reset loading state
+      setLoading(false);
     }
   };
 
@@ -48,17 +49,29 @@ const LoginPage = () => {
           required
           onChange={(e) => setEmail(e.target.value)}
         />
+
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Password"
           value={password}
           required
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <label className="show-password">
+          <input
+            type="checkbox"
+            checked={showPassword}
+            onChange={() => setShowPassword((prev) => !prev)}
+          />
+          Show Password
+        </label>
+
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+
       {error && <p className="error-message">{error}</p>}
 
       <p>

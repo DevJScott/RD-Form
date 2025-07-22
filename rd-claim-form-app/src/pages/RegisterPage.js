@@ -6,39 +6,40 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👁️
   const [error, setError] = useState("");
 
- const handleRegister = async (e) => {
-  e.preventDefault();
+  const handleRegister = async (e) => {
+    e.preventDefault();
 
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
 
-  if (!email.includes("@")) {
-    setError("Please enter a valid email address.");
-    return;
-  }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
 
-  if (password.length < 6) {
-    setError("Password must be at least 6 characters long.");
-    return;
-  }
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Registration failed");
 
-    if (!res.ok) throw new Error(data.message || "Registration failed");
+      alert("🎉 Registration successful! You can now log in.");
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
-    alert("🎉 Registration successful! You can now log in.");
-    navigate("/");
-  } catch (err) {
-    setError(err.message);
-  }
-};
   return (
     <div className="auth-container">
       <h2>Register</h2>
@@ -50,15 +51,26 @@ const RegisterPage = () => {
           required
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          required
-          onChange={(e) => setPassword(e.target.value)}
-        />
+
+        <div className="password-wrapper">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </span>
+        </div>
+
         <button type="submit">Register</button>
       </form>
+
       {error && <p className="error-message">{error}</p>}
 
       <p>

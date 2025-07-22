@@ -74,6 +74,15 @@
   text-decoration: underline;
 }
 
+.show-password {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+  color: #555;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
