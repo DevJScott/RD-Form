@@ -24,9 +24,18 @@ export const generateNarrativePDF = async (formData) => {
       img.src = src;
     });
 
-  const logo = await loadImage(LOGO_URL);
-  doc.addImage(logo, "PNG", 10, 10, 40, 15);
-  y = 30;
+// Load and insert logo (centered, readable)
+const logo = await loadImage(LOGO_URL);
+const logoWidth = 60;
+const logoHeight = 20;
+const pageWidth = doc.internal.pageSize.width;
+const logoX = (pageWidth - logoWidth) / 2;
+
+doc.setFillColor(255, 255, 255); // White background for logo
+doc.rect(0, 0, pageWidth, 30, "F"); // Fill top strip
+doc.addImage(logo, "PNG", logoX, 8, logoWidth, logoHeight);
+
+y = 35; // push content down after logo
 
   // Header
   doc.setFontSize(14);
