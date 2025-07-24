@@ -1,3 +1,5 @@
+// utils/pdfGenerator.js
+
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -24,20 +26,10 @@ export const generateNarrativePDF = async (formData) => {
       img.src = src;
     });
 
-// Load and insert logo (centered, readable)
-const logo = await loadImage(LOGO_URL);
-const logoWidth = 60;
-const logoHeight = 20;
-const pageWidth = doc.internal.pageSize.width;
-const logoX = (pageWidth - logoWidth) / 2;
+  const logo = await loadImage(LOGO_URL);
+  doc.addImage(logo, "PNG", 10, 10, 40, 15);
+  y = 30;
 
-doc.setFillColor(255, 255, 255); // White background for logo
-doc.rect(0, 0, pageWidth, 30, "F"); // Fill top strip
-doc.addImage(logo, "PNG", logoX, 8, logoWidth, logoHeight);
-
-y = 35; // push content down after logo
-
-  // Header
   doc.setFontSize(14);
   doc.setFont(undefined, "bold");
   doc.text(`${formData.companyName || "Company"} – R&D Tax Relief Report`, 60, y);
@@ -56,26 +48,25 @@ y = 35; // push content down after logo
     }
   };
 
-  // Section 1: Overview
+  // Section 1: Company Overview
   doc.setFont(undefined, "bold");
-  doc.text("1. Company Overview", 10, y); y += 8;
+  doc.text("1. Company Overview", 10, y);
+  y += 8;
   doc.setFont(undefined, "normal");
   doc.text(doc.splitTextToSize(
-    `${formData.companyName} is an SME operating in the ${formData.industry || "—"} sector. It employs ${
-      formData.staffCount || "—"
-    } staff and ${
+    `${formData.companyName} operates in the ${formData.industry || "—"} sector. It has ${formData.staffCount || "—"} staff and ${
       formData.paysCorpTax ? "is" : "is not"
-    } subject to Corporation Tax. The company ${
-      formData.hasClaimedBefore ? "has previously claimed" : "has not claimed"
-    } R&D relief from HMRC.`,
+    } subject to Corporation Tax. It ${formData.hasClaimedBefore ? "has" : "has not"} previously claimed R&D relief.`,
     190
-  ), 10, y); y += 20;
+  ), 10, y);
+  y += 20;
 
   // Section 2: Projects
   const projects = formData.projectTitles?.length ? formData.projectTitles : ["Unnamed Project"];
   projects.forEach((title, i) => {
     doc.setFont(undefined, "bold");
-    doc.text(`2.${i + 1} Project: ${title}`, 10, y); y += 8;
+    doc.text(`2.${i + 1} Project: ${title}`, 10, y);
+    y += 8;
     doc.setFont(undefined, "normal");
 
     const aims = Array.isArray(formData.projectAims) ? formData.projectAims[i] : formData.projectAims;
@@ -83,91 +74,84 @@ y = 35; // push content down after logo
     const outputs = Array.isArray(formData.projectOutputs) ? formData.projectOutputs[i] : formData.projectOutputs;
 
     doc.text(doc.splitTextToSize(
-      `The company aimed to: ${aims || "—"}.\n\nTechnical challenges included: ${challenges || "—"}.\n\nExpected outputs: ${outputs || "—"}.\n\nThis work aligns with the definition of R&D under HMRC’s CIRD81910, paragraphs 9a–9d.`,
+      `Objectives: ${aims || "—"}
+Technical Challenges: ${challenges || "—"}
+Expected Outputs: ${outputs || "—"}
+
+This aligns with HMRC's guidance CIRD81910 §§9a–9d.`,
       190
-    ), 10, y); y += 35;
+    ), 10, y);
+    y += 35;
   });
 
   // Section 3: Technical Narrative
   doc.setFont(undefined, "bold");
-  doc.text("3. Technical Narrative", 10, y); y += 8;
+  doc.text("3. Technical Narrative", 10, y);
+  y += 8;
   doc.setFont(undefined, "normal");
   doc.text(doc.splitTextToSize(
-    `The company addressed technological uncertainties that could not be resolved using publicly available knowledge. These uncertainties included: ${
-      formData.technologicaluncertainties || "—"
-    }.\n\nResolution work was led by ${formData.technicalLead || "—"}, a competent professional in ${
+    `Uncertainties (CIRD81910 §§12–13): ${formData.technologicaluncertainties || "—"}
+
+Resolution led by ${formData.technicalLead || "—"}, an experienced professional in ${
       formData.scienceField || formData.technicalField || "—"
-    }, and included: ${formData.technicalresolutions || "—"}.`,
-    190
-  ), 10, y); y += 35;
-
-  // Section 4: Competent Professional
-  doc.setFont(undefined, "bold");
-  doc.text("4. Competent Professional", 10, y); y += 8;
-  doc.setFont(undefined, "normal");
-  doc.text(doc.splitTextToSize(
-    `${formData.technicalLead || "—"} is identified as the competent professional on this project, with significant experience in the field of ${formData.scienceField || formData.technicalField || "—"}.`,
-    190
-  ), 10, y); y += 20;
-
-// Section 5: Expenditure
-doc.setFont(undefined, "bold");
-doc.text("5. Expenditure Summary", 10, y); y += 8;
-
-autoTable(doc, {
-  startY: y,
-  styles: { fontSize: 10 },
-  head: [["Category", "Amount (£)"]],
-  body: [
-    ["Staff Cost", formData.totalStaffCost || "—"],
-    ["Software", formData.softwareTotal || "—"],
-    ["Volunteers", formData.volunteerCost || "—"],
-    ["Raw Materials", formData.rawMaterialCost || "—"],
-    ["Heat & Light", formData.heatLightTotalCost || "—"],
-    ["EPWs", formData.epwCost || "—"],
-    ["Subcontractors", formData.subcontractorCost || "—"],
-  ],
-});
-
-// ✅ Safe access with fallback
-y = doc.previousAutoTable?.finalY ? doc.previousAutoTable.finalY + 10 : y + 10;
-
-
-  // Section 6: Indirect Activities
-  doc.setFont(undefined, "bold");
-  doc.text("6. Indirect R&D Activities", 10, y); y += 8;
-  doc.setFont(undefined, "normal");
-  doc.text(doc.splitTextToSize(
-    `Approximately 5–10% of qualifying time was spent on indirect activities, including technical meetings, feasibility assessments, design iteration planning, and documentation work.`,
-    190
-  ), 10, y); y += 20;
-
-  // Section 7: Grants & Subcontractors
-  doc.setFont(undefined, "bold");
-  doc.text("7. Grants and Subcontracting", 10, y); y += 8;
-  doc.setFont(undefined, "normal");
-  doc.text(doc.splitTextToSize(
-    `No grant funding or subcontracted R&D activities were used during the claim period. All work was carried out in-house.`,
-    190
-  ), 10, y); y += 20;
-
-  // Section 8: Recordkeeping
-  doc.setFont(undefined, "bold");
-  doc.text("8. Recordkeeping", 10, y); y += 8;
-  doc.setFont(undefined, "normal");
-  doc.text(doc.splitTextToSize(
-    `Records have been retained to evidence the R&D work, including sprint logs, internal communications, design iterations, testing results, and research documentation.`,
-    190
-  ), 10, y); y += 20;
-
-  // Section 9: Declaration
-  doc.setFont(undefined, "bold");
-  doc.text("9. Declaration", 10, y); y += 8;
-  doc.setFont(undefined, "normal");
-  doc.text(doc.splitTextToSize(
-    `I confirm the above information is accurate and complete, and that the activities described align with HMRC’s definition of R&D under CIRD81900 and CIRD81910.`,
+    }. Methods: ${formData.technicalresolutions || "—"}.`,
     190
   ), 10, y);
+  y += 35;
+
+  // Section 4: Cost Summary
+  doc.setFont(undefined, "bold");
+  doc.text("4. Expenditure Summary", 10, y);
+  y += 8;
+
+  autoTable(doc, {
+    startY: y,
+    styles: { fontSize: 10 },
+    head: [["Category", "Amount (£)"]],
+    body: [
+      ["Staff Cost", formData.totalStaffCost || "—"],
+      ["Software", formData.softwareTotal || "—"],
+      ["Volunteers", formData.volunteerCost || "—"],
+      ["Raw Materials", formData.rawMaterialCost || "—"],
+      ["Heat & Light", formData.heatLightTotalCost || "—"],
+      ["EPWs", formData.epwCost || "—"],
+      ["Subcontractors", formData.subcontractorCost || "—"],
+    ],
+  });
+  y = doc.previousAutoTable?.finalY + 10 || y + 40;
+
+  // Section 5: Scheme Breakdown
+  doc.setFont(undefined, "bold");
+  doc.text("5. Scheme Breakdown", 10, y);
+  y += 8;
+
+  autoTable(doc, {
+    startY: y,
+    styles: { fontSize: 10 },
+    head: [["Scheme", "Amount (£)"]],
+    body: [
+      ["SME", formData.totalSMEExpenditure || "—"],
+      ["RDEC", formData.totalRDECExpenditure || "—"],
+      ["Total", formData.totalClaimExpenditure || "—"],
+    ],
+  });
+  y = doc.previousAutoTable?.finalY + 10 || y + 30;
+
+  // Section 6: Recordkeeping & Declaration
+  doc.setFont(undefined, "bold");
+  doc.text("6. Recordkeeping & Declaration", 10, y);
+  y += 8;
+  doc.setFont(undefined, "normal");
+  doc.text(doc.splitTextToSize(
+    `The company has retained evidence including sprint logs, feasibility reports, emails, design files, and internal documentation.
+
+I confirm the information above is accurate and complete.`,
+    190
+  ), 10, y);
+  y += 20;
+
+  doc.text("Signature: ____________________", 10, y);
+  doc.text("Date: ____________________", 140, y);
 
   addFooter();
   doc.save("rd-tax-relief-report.pdf");
