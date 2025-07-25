@@ -73,6 +73,7 @@ body {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+
 .auth-container button:hover {
   background-color: #b33c3c;
   transform: translateY(-2px);
