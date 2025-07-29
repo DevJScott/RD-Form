@@ -2,6 +2,7 @@ import React from "react";
 
 function SubStep3Professionals({ formData, onChange }) {
   const professionals = formData.competentProfessionals || [];
+  const companyName = formData.companyName || "the company";
 
   const updateProfessional = (index, field, value) => {
     const updated = [...professionals];
@@ -64,7 +65,7 @@ function SubStep3Professionals({ formData, onChange }) {
       </ul>
       <p>
         Please enter details of the competent professionals who worked on{" "}
-        <strong>{formData.companyName || "PLAYCRAFT LTD"}</strong>’s projects during this claim year.
+        <strong>{companyName}</strong>’s projects during this claim year.
         They do not have to be direct employees.
       </p>
 
@@ -74,7 +75,7 @@ function SubStep3Professionals({ formData, onChange }) {
           checked={formData.noCompetentProfessionals || false}
           onChange={(e) => handleNoProfessionals(e.target.checked)}
         />{" "}
-        PLAYCRAFT LTD didn’t use competent professionals to lead the projects
+        {companyName} didn’t use competent professionals to lead the projects
       </label>
 
       <hr />

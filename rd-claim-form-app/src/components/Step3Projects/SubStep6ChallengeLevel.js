@@ -5,6 +5,8 @@ function SubStep6ChallengeLevel({ formData, onChange }) {
     onChange("challengeLevelSlider", Number(e.target.value));
   };
 
+  const companyName = formData.companyName || "the company";
+
   return (
     <div>
       <h3>Challenge Level</h3>
@@ -15,7 +17,7 @@ function SubStep6ChallengeLevel({ formData, onChange }) {
       </p>
       <p>
         Use the slider below to choose the statement that best describes the significance of the technical difficulties
-        PLAYCRAFT LTD faced within the claim period.
+        <strong> {companyName} </strong> faced within the claim period.
       </p>
 
       <input
@@ -27,7 +29,14 @@ function SubStep6ChallengeLevel({ formData, onChange }) {
         onChange={handleSliderChange}
         style={{ width: "100%" }}
       />
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9em", marginTop: "5px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "0.9em",
+          marginTop: "5px",
+        }}
+      >
         <span>Trivial</span>
         <span>Really tough</span>
       </div>

@@ -1,6 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 
 function SubStep5TechChallenges({ formData, onChange }) {
+  const companyName = formData.companyName || "the company";
+
+  const [expandedCategories, setExpandedCategories] = useState({});
+
+  const toggleCategory = (category) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
+
   const allChallenges = {
     software: [
       "Trying to find, diagnose and rectify race conditions",
@@ -83,48 +94,62 @@ function SubStep5TechChallenges({ formData, onChange }) {
     <div>
       <h3>Technical Challenges</h3>
       <p>
-        The technical difficulties PLAYCRAFT LTD faced in its projects are key to demonstrating
-        to HMRC that the claim is valid. The company doesn’t need to have overcome the issue, just
-        be actively trying to solve it.
+        The technical difficulties <strong>{companyName}</strong> faced in its projects are key to demonstrating to HMRC that the claim is valid. The company doesn’t need to have overcome the issue — just be actively trying to solve it.
       </p>
-      <p>Please select <strong>up to 5 technical difficulties</strong> PLAYCRAFT LTD faced:</p>
+      <p><strong>Select up to 5 technical difficulties</strong> {companyName} faced:</p>
 
-      <label>
+      <label style={{ display: "block", marginBottom: "15px" }}>
         <input
           type="checkbox"
           checked={formData.noTechChallenges || false}
           onChange={(e) => handleNoChallenges(e.target.checked)}
         />{" "}
-        PLAYCRAFT LTD encountered no significant technical difficulties during the claim period.
+        {companyName} encountered no significant technical difficulties during the claim period.
       </label>
 
       {!formData.noTechChallenges && (
         <>
           {Object.entries(allChallenges).map(([category, items]) => (
-            <div key={category}>
-              <h4 style={{ textTransform: "capitalize" }}>{category} challenges</h4>
-              {items.map((item) => (
-                <label key={item} style={{ display: "block", marginBottom: "6px" }}>
-                  <input
-                    type="checkbox"
-                    checked={isChecked(item)}
-                    onChange={() => handleToggle(item)}
-                  />{" "}
-                  {item}
-                </label>
-              ))}
-              <label>
-                Other:
-                <input
-                  type="text"
-                  style={{ width: "100%", marginTop: "5px" }}
-                  value={formData[`${category}Other`] || ""}
-                  onChange={(e) =>
-                    handleOtherChange(`${category}Other`, e.target.value)
-                  }
-                />
-              </label>
-              <hr />
+            <div key={category} style={{ marginBottom: "25px" }}>
+              <div
+                onClick={() => toggleCategory(category)}
+                style={{
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "1.1em",
+                  marginBottom: "6px",
+                }}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)} Challenges{" "}
+                {expandedCategories[category] ? "▲" : "▼"}
+              </div>
+
+              {expandedCategories[category] && (
+                <div style={{ paddingLeft: "10px", marginTop: "8px" }}>
+                  {items.map((item) => (
+                    <label key={item} style={{ display: "block", marginBottom: "6px" }}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked(item)}
+                        onChange={() => handleToggle(item)}
+                      />{" "}
+                      {item}
+                    </label>
+                  ))}
+                  <label style={{ display: "block", marginTop: "10px" }}>
+                    Other:
+                    <input
+                      type="text"
+                      style={{ width: "100%", padding: "6px", marginTop: "5px" }}
+                      value={formData[`${category}Other`] || ""}
+                      onChange={(e) =>
+                        handleOtherChange(`${category}Other`, e.target.value)
+                      }
+                    />
+                  </label>
+                </div>
+              )}
+              <hr style={{ marginTop: "15px" }} />
             </div>
           ))}
         </>

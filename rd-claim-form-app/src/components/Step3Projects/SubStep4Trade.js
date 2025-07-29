@@ -1,4 +1,6 @@
 function SubStep4Trade({ formData, onChange }) {
+  const companyName = formData.companyName || "the company";
+
   return (
     <div>
       <h3>Trade</h3>
@@ -14,7 +16,7 @@ function SubStep4Trade({ formData, onChange }) {
 
       <p>
         HMRC will only support claims for R&D that is relevant to the claimant company.
-        This means the work claimed for has to be related to <strong>{formData.companyName || "PLAYCRAFT LTD"}</strong>'s trade or industry.
+        This means the work claimed for has to be related to <strong>{companyName}</strong>'s trade or industry.
       </p>
       <p>Please select the option that best fits the R&D work:</p>
 

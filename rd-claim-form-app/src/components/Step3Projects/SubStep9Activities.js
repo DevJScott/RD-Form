@@ -79,6 +79,8 @@ function SubStep9Activities({ formData, onChange }) {
     onChange("rdLocation", e.target.value);
   };
 
+  const companyName = formData.companyName || "the company";
+
   return (
     <div>
       <h3>Routine Activities</h3>
@@ -104,7 +106,7 @@ function SubStep9Activities({ formData, onChange }) {
       <p>
         These activities directly contribute to R&D — such as managing the project, setting technical goals, testing, or indirect activities like IT support and admin.
       </p>
-      <p><strong>Select up to 5 activities PLAYCRAFT LTD carried out during the claim.</strong></p>
+      <p><strong>Select up to 5 activities {companyName} carried out during the claim.</strong></p>
 
       {rAndDOptions.map((item) => (
         <label key={item} style={{ display: "block", marginBottom: "8px" }}>
@@ -140,7 +142,7 @@ function SubStep9Activities({ formData, onChange }) {
       <hr style={{ margin: "30px 0" }} />
 
       <h3>R&D Location</h3>
-      <p>Where did PLAYCRAFT LTD’s R&D activity take place during this claim period?</p>
+      <p>Where did {companyName}’s R&D activity take place during this claim period?</p>
       <div style={{ marginBottom: "15px" }}>
         {["All activity was in the UK", "All activity was overseas", "Activity was in both the UK and overseas"].map((option) => (
           <label key={option} style={{ display: "block", marginBottom: "8px" }}>

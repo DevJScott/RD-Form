@@ -5,11 +5,13 @@ function SubStep8TimeSpan({ formData, onChange }) {
     onChange(field, value);
   };
 
+  const companyName = formData.companyName || "the company";
+
   return (
     <div>
       <h3>Time Span of Technical Problem Solving</h3>
       <p>
-        HMRC needs to know when <strong>{formData.companyName || "PLAYCRAFT LTD"}</strong> was actively working to overcome technical challenges.
+        HMRC needs to know when <strong>{companyName}</strong> was actively working to overcome technical challenges.
         The activity must fall within the claim period (01 October 2023 to 30 September 2024), but can begin before or finish after it.
       </p>
 
