@@ -1,7 +1,6 @@
 import React from "react";
 import { generateNarrativePDF } from "../../utils/pdfGenerator";
 
-
 // Optional: Map field keys to human-readable labels
 const labels = {
   isLimitedCompany: "Is a Limited Company",
@@ -22,7 +21,7 @@ const formatField = (key, value) => {
   const label = labels[key] || key;
   if (Array.isArray(value)) return `${label}: ${value.join(", ")}`;
   if (typeof value === "object" && value !== null) return `${label}: [object]`;
-  return `${label}: ${value !== "" ? value : "—"}`;
+  return `${label}: ${value !== "" && value !== undefined ? value : "—"}`;
 };
 
 function Step6Summary({ formData, onBack }) {
@@ -113,11 +112,11 @@ function Step6Summary({ formData, onBack }) {
   };
 
   return (
-    <div>
+    <div className="step-wrapper">
       <h2>✅ Step 6: Review and Finalize</h2>
 
       {Object.entries(groupedSections).map(([section, keys]) => (
-        <div key={section} style={{ marginBottom: "20px" }}>
+        <div key={section} className="section-card">
           <h3>{section}</h3>
           <ul>
             {keys.map((key) => (
@@ -125,7 +124,7 @@ function Step6Summary({ formData, onBack }) {
                 <strong>{labels[key] || key}:</strong>{" "}
                 {Array.isArray(formData[key])
                   ? formData[key].join(", ")
-                  : formData[key] !== null
+                  : formData[key] !== null && formData[key] !== undefined
                   ? String(formData[key])
                   : "—"}
               </li>
@@ -134,10 +133,10 @@ function Step6Summary({ formData, onBack }) {
         </div>
       ))}
 
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={() => generateNarrativePDF(formData)}>📄 Download Full R&D Report</button>
-        <button onClick={generateTextReport}>📄 Download TXT</button>
-        <button onClick={handleSubmitToBackend}>🚀 Submit Claim</button>
+      <div className="form-group" style={{ marginTop: "30px" }}>
+        <button onClick={() => generateNarrativePDF(formData)}>📄 Download Full R&D Report</button>{" "}
+        <button onClick={generateTextReport}>📄 Download TXT</button>{" "}
+        <button onClick={handleSubmitToBackend}>🚀 Submit Claim</button>{" "}
         <button onClick={onBack}>⬅ Back</button>
       </div>
     </div>

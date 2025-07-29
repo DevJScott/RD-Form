@@ -41,11 +41,13 @@ function Step3Projects({ formData, onChange, onNext, onBack }) {
   };
 
   return (
-    <div>
+    <div className="step-wrapper">
       <h2>Step 3: Projects</h2>
       <p>Section {subStep} of {TOTAL_SUBSTEPS}</p>
 
-      {renderSubStep()}
+      <div className="section-card">
+        {renderSubStep()}
+      </div>
 
       <div style={{ marginTop: "20px" }}>
         {subStep > 1 && <button onClick={prevSub}>Back</button>}{" "}
