@@ -1,4 +1,9 @@
+import React from "react";
+import { useStepValidation } from "../hooks/useStepValidation"; // Make sure this hook exists
+
 function Step1Qualification({ formData, onChange, onNext }) {
+  const { isValid, errors } = useStepValidation(1, formData); // Step 1 validation
+
   const handleRadioChange = (field, value) => {
     onChange(field, value);
   };
@@ -11,17 +16,13 @@ function Step1Qualification({ formData, onChange, onNext }) {
     onChange(e.target.name, e.target.value);
   };
 
-  const allAnswered = [
-    "isLimitedCompany",
-    "paysCorpTax",
-    "inAdministration",
-    "inLiquidation",
-    "accountsPreparedOnGoingConcern",
-    "claimStartDate",
-    "claimEndDate",
-    "hasClaimedBefore",
-    "hasNotifiedHMRC"
-  ].every((key) => formData[key] !== "") && formData.understandsGoingConcernWarning;
+  const handleNextClick = () => {
+    if (!isValid) {
+      alert("Please correct the highlighted errors before continuing.");
+      return;
+    }
+    onNext();
+  };
 
   return (
     <div className="step-wrapper">
@@ -55,6 +56,7 @@ function Step1Qualification({ formData, onChange, onNext }) {
             />
             <label htmlFor="isLimitedCompanyNo">No</label>
           </div>
+          {errors.isLimitedCompany && <p className="error">{errors.isLimitedCompany}</p>}
         </div>
 
         {/* Corporation Tax */}
@@ -82,9 +84,10 @@ function Step1Qualification({ formData, onChange, onNext }) {
             />
             <label htmlFor="paysCorpTaxNo">No</label>
           </div>
+          {errors.paysCorpTax && <p className="error">{errors.paysCorpTax}</p>}
         </div>
 
-        {/* Other Yes/No questions */}
+        {/* Repeating Yes/No Questions */}
         {[
           { label: "Is the company in administration?", name: "inAdministration" },
           { label: "Is the company in liquidation?", name: "inLiquidation" },
@@ -116,10 +119,11 @@ function Step1Qualification({ formData, onChange, onNext }) {
               />
               <label htmlFor={`${name}No`}>No</label>
             </div>
+            {errors[name] && <p className="error">{errors[name]}</p>}
           </div>
         ))}
 
-        {/* Claim Period */}
+        {/* Claim Dates */}
         <div className="form-group">
           <label>Claim Start Date</label>
           <input
@@ -128,6 +132,7 @@ function Step1Qualification({ formData, onChange, onNext }) {
             value={formData.claimStartDate}
             onChange={handleInputChange}
           />
+          {errors.claimStartDate && <p className="error">{errors.claimStartDate}</p>}
         </div>
 
         <div className="form-group">
@@ -138,6 +143,7 @@ function Step1Qualification({ formData, onChange, onNext }) {
             value={formData.claimEndDate}
             onChange={handleInputChange}
           />
+          {errors.claimEndDate && <p className="error">{errors.claimEndDate}</p>}
         </div>
 
         {/* Checkbox */}
@@ -150,12 +156,13 @@ function Step1Qualification({ formData, onChange, onNext }) {
             />
             I understand the going concern condition
           </label>
+          {errors.understandsGoingConcernWarning && (
+            <p className="error">{errors.understandsGoingConcernWarning}</p>
+          )}
         </div>
       </div>
 
-      <button onClick={onNext} disabled={!allAnswered}>
-        Next
-      </button>
+      <button onClick={handleNextClick}>Next</button>
     </div>
   );
 }

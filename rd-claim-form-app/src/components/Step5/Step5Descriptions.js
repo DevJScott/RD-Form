@@ -1,116 +1,116 @@
 import React from "react";
 
-function ProjectDescriptions({ formData, onChange }) {
-  const projects = formData.projectDescriptions || [];
-
-  const updateProject = (index, field, value) => {
-    const updated = [...projects];
-    updated[index] = { ...updated[index], [field]: value };
-    onChange("projectDescriptions", updated);
-  };
-
+function Step5Descriptions({ formData, onChange, onBack, onNext }) {
   return (
     <div className="step-wrapper">
-      <h2>Project Descriptions</h2>
+      <h2>Step 5: Project Descriptions</h2>
 
-      {projects.map((proj, i) => (
-        <div key={i} className="section-card">
-          <p><strong>Project Title:</strong> {proj.title}</p>
-          <p><strong>% of total SME eligible expenditure:</strong> {proj.expenditurePercent}%</p>
-
-          <div className="form-group">
-            <label>Technical Lead</label>
-            <input
-              type="text"
-              value={proj.technicalLead || ""}
-              onChange={(e) => updateProject(i, "technicalLead", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Field of Science or Technology</label>
-            <input
-              type="text"
-              value={proj.field || ""}
-              onChange={(e) => updateProject(i, "field", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Start Month</label>
-            <input
-              type="date"
-              value={proj.start || ""}
-              onChange={(e) => updateProject(i, "start", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>End Month</label>
-            <input
-              type="date"
-              value={proj.end || ""}
-              onChange={(e) => updateProject(i, "end", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Industry Baseline at the Start of the Project</label>
-            <textarea
-              value={proj.baseline || ""}
-              onChange={(e) => updateProject(i, "baseline", e.target.value)}
-              rows={5}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Technological Advance Sought</label>
-            <textarea
-              value={proj.advance || ""}
-              onChange={(e) => updateProject(i, "advance", e.target.value)}
-              rows={5}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Technological Uncertainties Encountered</label>
-            <textarea
-              value={proj.uncertainties || ""}
-              onChange={(e) => updateProject(i, "uncertainties", e.target.value)}
-              rows={5}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Technical Resolutions Attempted</label>
-            <textarea
-              value={proj.resolutions || ""}
-              onChange={(e) => updateProject(i, "resolutions", e.target.value)}
-              rows={5}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Supporting Image (optional)</label>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/gif"
-              onChange={(e) => updateProject(i, "image", e.target.files[0])}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Image Caption (optional)</label>
-            <input
-              type="text"
-              value={proj.imageCaption || ""}
-              onChange={(e) => updateProject(i, "imageCaption", e.target.value)}
-            />
-          </div>
+      <div className="section-card">
+        <div className="form-group">
+          <label htmlFor="technicalLead">Technical Lead</label>
+          <input
+            id="technicalLead"
+            type="text"
+            value={formData.technicalLead || ""}
+            onChange={(e) => onChange("technicalLead", e.target.value)}
+          />
         </div>
-      ))}
+
+        <div className="form-group">
+          <label htmlFor="scienceField">Field of Science or Technology</label>
+          <input
+            id="scienceField"
+            type="text"
+            value={formData.scienceField || ""}
+            onChange={(e) => onChange("scienceField", e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="projectStart">Start Month</label>
+          <input
+            id="projectStart"
+            type="date"
+            value={formData.projectStart || ""}
+            onChange={(e) => onChange("projectStart", e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="projectEnd">End Month</label>
+          <input
+            id="projectEnd"
+            type="date"
+            value={formData.projectEnd || ""}
+            onChange={(e) => onChange("projectEnd", e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Industry Baseline (max 20,000 chars)</label>
+          <textarea
+            rows={8}
+            maxLength={20000}
+            value={formData.industrybaseline || ""}
+            onChange={(e) => onChange("industrybaseline", e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Technological Advance (max 20,000 chars)</label>
+          <textarea
+            rows={8}
+            maxLength={20000}
+            value={formData.technologicaladvance || ""}
+            onChange={(e) => onChange("technologicaladvance", e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Technological Uncertainties (max 20,000 chars)</label>
+          <textarea
+            rows={8}
+            maxLength={20000}
+            value={formData.technologicaluncertainties || ""}
+            onChange={(e) => onChange("technologicaluncertainties", e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Technical Resolutions (max 20,000 chars)</label>
+          <textarea
+            rows={8}
+            maxLength={20000}
+            value={formData.technicalresolutions || ""}
+            onChange={(e) => onChange("technicalresolutions", e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Supporting Image (optional)</label>
+          <input
+            type="file"
+            accept="image/png, image/jpeg, image/jpg, image/gif"
+            onChange={(e) => onChange("supportingImage", e.target.files[0])}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Image Caption (optional)</label>
+          <input
+            type="text"
+            value={formData.imageCaption || ""}
+            onChange={(e) => onChange("imageCaption", e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div style={{ marginTop: "30px", display: "flex", justifyContent: "space-between" }}>
+        <button onClick={onBack}>Back</button>
+        <button onClick={onNext}>Next</button>
+      </div>
     </div>
   );
 }
 
-export default ProjectDescriptions;
+export default Step5Descriptions;

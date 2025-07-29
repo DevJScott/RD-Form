@@ -1,6 +1,22 @@
 import React from "react";
 import { generateNarrativePDF } from "../../utils/pdfGenerator";
 
+// R&D scheme detection logic
+const determineRDScheme = (formData) => {
+  const totalStaff =
+    Number(formData.directorCount || 0) + Number(formData.staffCount || 0);
+  const partOfGroup = formData.partOfGroup === "Yes";
+  const hasConnectedCompanies = formData.hasConnectedCompanies === "Yes";
+  const receivedGrants =
+    formData.stateAidGrants === "Yes" || formData.nonStateAidGrants === "Yes";
+  const actedAsSubcontractor = formData.actedAsSubcontractor === "rdInvolved";
+
+  const isSME = totalStaff < 500 && !partOfGroup && !hasConnectedCompanies;
+
+  if (!isSME || receivedGrants || actedAsSubcontractor) return "RDEC";
+  return "SME";
+};
+
 // Optional: Map field keys to human-readable labels
 const labels = {
   isLimitedCompany: "Is a Limited Company",
@@ -14,7 +30,8 @@ const labels = {
   projectAims: "Project Aims",
   technologicalChallenges: "Technological Challenges",
   projectOutputs: "Project Outputs",
-  // Add more as needed...
+  actedAsSubcontractor: "Acted as a Subcontractor",
+  // Extend as needed...
 };
 
 const formatField = (key, value) => {
@@ -25,6 +42,8 @@ const formatField = (key, value) => {
 };
 
 function Step6Summary({ formData, onBack }) {
+  const scheme = determineRDScheme(formData);
+
   const groupedSections = {
     "Step 1: Eligibility & Qualification": [
       "isLimitedCompany", "paysCorpTax", "inAdministration", "inLiquidation",
@@ -48,13 +67,19 @@ function Step6Summary({ formData, onBack }) {
       "documentationEvidence", "stateAidGrants", "nonStateAidGrants",
       "projectCount", "projectTitles"
     ],
+    ...(scheme === "SME" && {
+      "SME-Specific Details": ["rdSalaryPortion", "usedVolunteers", "volunteerCost"]
+    }),
+    ...(scheme === "RDEC" && {
+      "RDEC-Specific Details": ["actedAsSubcontractor", "stateAidGrants", "nonStateAidGrants"]
+    }),
     "Step 4: Costs": [
       "staffTimeSplit", "staffTimeSplitMethod", "rdSalaryPortion", "employerNIC",
       "employerPension", "bonusExpense", "expenseReimbursement", "totalStaffCost",
-      "usedSoftware", "softwareTools", "softwareTotal", "usedVolunteers",
-      "volunteerCost", "rawMaterialCost", "heatLightPaymentType", "heatLightTotalCost",
-      "useDefaultHeatLightSplit", "heatLightProjectSplit", "usedEPWs", "epwCost",
-      "connectedEPWCost", "usedSubcontractors", "subcontractorCost", "connectedSubcontractorCost"
+      "usedSoftware", "softwareTools", "softwareTotal", "rawMaterialCost",
+      "heatLightPaymentType", "heatLightTotalCost", "useDefaultHeatLightSplit",
+      "heatLightProjectSplit", "usedEPWs", "epwCost", "connectedEPWCost",
+      "usedSubcontractors", "subcontractorCost", "connectedSubcontractorCost"
     ],
     "Step 5: Project Descriptions": [
       "technicalLead", "scienceField", "projectStart", "projectEnd",
@@ -64,7 +89,7 @@ function Step6Summary({ formData, onBack }) {
   };
 
   const generateTextReport = () => {
-    let textContent = "";
+    let textContent = `R&D Scheme Detected: ${scheme}\n`;
 
     Object.entries(groupedSections).forEach(([section, keys]) => {
       textContent += `\n=== ${section} ===\n`;
@@ -94,6 +119,7 @@ function Step6Summary({ formData, onBack }) {
         },
         body: JSON.stringify({
           ...formData,
+          scheme,
           isComplete: true,
         }),
       });
@@ -114,6 +140,7 @@ function Step6Summary({ formData, onBack }) {
   return (
     <div className="step-wrapper">
       <h2>✅ Step 6: Review and Finalize</h2>
+      <h3>📌 R&D Scheme Detected: <span style={{ color: scheme === "SME" ? "green" : "blue" }}>{scheme}</span></h3>
 
       {Object.entries(groupedSections).map(([section, keys]) => (
         <div key={section} className="section-card">

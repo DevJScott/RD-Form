@@ -1,19 +1,21 @@
 import React from "react";
 
 function SubStep2Subcontractor({ formData, onChange }) {
+  const companyName = formData.companyName || "the company";
+
   return (
     <div>
       <h3>Acting as a Subcontractor</h3>
       <p>
         The rules around claiming R&D tax relief while acting as a subcontractor can be complex.
         The questions in this section will help to establish how much work{" "}
-        <strong>{formData.companyName || "PLAYCRAFT LTD"}</strong> did as a subcontractor,
+        <strong>{companyName}</strong> did as a subcontractor,
         and whether it can claim for the costs of this work.
       </p>
 
       <p>
         Between <strong>01 October 2023</strong> and <strong>30 September 2024</strong>, did{" "}
-        <strong>{formData.companyName || "PLAYCRAFT LTD"}</strong> work as a subcontractor to other companies?
+        <strong>{companyName}</strong> work as a subcontractor to other companies?
       </p>
 
       <label>
@@ -48,7 +50,7 @@ function SubStep2Subcontractor({ formData, onChange }) {
           checked={formData.actedAsSubcontractor === "rdInvolved"}
           onChange={() => onChange("actedAsSubcontractor", "rdInvolved")}
         />
-        {" "}Yes, it did work as a subcontractor to other companies, and some R&D was involved - either for its client, or on its own account.
+        {" "}Yes, it did work as a subcontractor to other companies, and some R&D was involved — either for its client, or on its own account.
       </label>
     </div>
   );

@@ -1,14 +1,25 @@
+import React from "react";
+import { useStepValidation } from "../hooks/useStepValidation"; // Ensure this exists
+
 function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
+  const { isValid, errors } = useStepValidation(2, formData); // Step 2 validation
+
   const totalStaff =
     Number(formData.directorCount || 0) + Number(formData.staffCount || 0);
   const shouldBlock = totalStaff > 3 && totalStaff < 81;
-
   const companyName = formData.companyName || "the company";
+
+  const handleNext = () => {
+    if (!isValid) {
+      alert("Please correct all required fields before continuing.");
+      return;
+    }
+    onNext();
+  };
 
   return (
     <div className="step-wrapper">
       <h2>Step 2: The Basics</h2>
-
       <p>
         To determine which R&D tax relief scheme applies to your company, we need some essential background details.
       </p>
@@ -21,8 +32,9 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
         <input
           value={formData.companyName}
           onChange={(e) => onChange("companyName", e.target.value)}
-          required
-        /><br /><br />
+        />
+        {errors.companyName && <p className="error">{errors.companyName}</p>}
+        <br /><br />
 
         {formData.companyName && (
           <>
@@ -54,7 +66,9 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
         <input
           value={formData.contactName}
           onChange={(e) => onChange("contactName", e.target.value)}
-        /><br /><br />
+        />
+        {errors.contactName && <p className="error">{errors.contactName}</p>}
+        <br /><br />
 
         <label>Company Size:</label><br />
         <select
@@ -66,46 +80,39 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
           <option value="Small">Small (under 50 staff)</option>
           <option value="Medium">Medium (under 250 staff)</option>
           <option value="Large">Large (250+ staff)</option>
-        </select><br /><br />
+        </select>
+        {errors.companySize && <p className="error">{errors.companySize}</p>}
+        <br /><br />
 
         <label>Industry Sector:</label><br />
         <input
           value={formData.industry}
           onChange={(e) => onChange("industry", e.target.value)}
         />
+        {errors.industry && <p className="error">{errors.industry}</p>}
       </div>
 
       {/* B. Financial Snapshot */}
       <div className="section-card">
         <h3>Financial Snapshot (01 Oct 2023 – 30 Sept 2024)</h3>
 
-        <label>Revenue (£):</label><br />
-        <input
-          type="number"
-          value={formData.revenue}
-          onChange={(e) => onChange("revenue", e.target.value)}
-        /><br /><br />
-
-        <label>Total balance sheet assets at 30 Sept 2024 (£):</label><br />
-        <input
-          type="number"
-          value={formData.balanceSheetAssets}
-          onChange={(e) => onChange("balanceSheetAssets", e.target.value)}
-        /><br /><br />
-
-        <label>Total trading and operating expenses (£):</label><br />
-        <input
-          type="number"
-          value={formData.tradingExpenses}
-          onChange={(e) => onChange("tradingExpenses", e.target.value)}
-        /><br /><br />
-
-        <label>Total capitalised R&D expenditure (£):</label><br />
-        <input
-          type="number"
-          value={formData.capitalisedRAndD}
-          onChange={(e) => onChange("capitalisedRAndD", e.target.value)}
-        /><br /><br />
+        {["revenue", "balanceSheetAssets", "tradingExpenses", "capitalisedRAndD"].map((key) => (
+          <div key={key}>
+            <label>{{
+              revenue: "Revenue (£):",
+              balanceSheetAssets: "Total balance sheet assets at 30 Sept 2024 (£):",
+              tradingExpenses: "Total trading and operating expenses (£):",
+              capitalisedRAndD: "Total capitalised R&D expenditure (£):"
+            }[key]}</label><br />
+            <input
+              type="number"
+              value={formData[key]}
+              onChange={(e) => onChange(key, e.target.value)}
+            />
+            {errors[key] && <p className="error">{errors[key]}</p>}
+            <br /><br />
+          </div>
+        ))}
 
         <label>Profit or Loss before R&D claim (£):</label><br />
         <input
@@ -114,6 +121,7 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
           onChange={(e) => onChange("profitOrLoss", e.target.value)}
           placeholder="Enter - for loss"
         />
+        {errors.profitOrLoss && <p className="error">{errors.profitOrLoss}</p>}
       </div>
 
       {/* C. People & Activity */}
@@ -126,7 +134,9 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
           min="0"
           value={formData.directorCount}
           onChange={(e) => onChange("directorCount", e.target.value)}
-        /><br /><br />
+        />
+        {errors.directorCount && <p className="error">{errors.directorCount}</p>}
+        <br /><br />
 
         <label>Number of full-time staff (excluding directors):</label><br />
         <input
@@ -134,7 +144,9 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
           min="0"
           value={formData.staffCount}
           onChange={(e) => onChange("staffCount", e.target.value)}
-        /><br /><br />
+        />
+        {errors.staffCount && <p className="error">{errors.staffCount}</p>}
+        <br /><br />
 
         <label>External technical subcontractors or consultants used:</label><br />
         <input
@@ -142,7 +154,9 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
           min="0"
           value={formData.subcontractorCount}
           onChange={(e) => onChange("subcontractorCount", e.target.value)}
-        /><br /><br />
+        />
+        {errors.subcontractorCount && <p className="error">{errors.subcontractorCount}</p>}
+        <br /><br />
 
         {shouldBlock && (
           <p style={{ color: "red", fontWeight: "bold" }}>
@@ -175,7 +189,9 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
             onChange={(e) => onChange("partOfGroup", e.target.value)}
           />{" "}
           No
-        </label><br /><br />
+        </label>
+        {errors.partOfGroup && <p className="error">{errors.partOfGroup}</p>}
+        <br /><br />
 
         <p>Did {companyName} have any connected companies during the claim period?</p>
         <label>
@@ -198,14 +214,13 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
           />{" "}
           No
         </label>
+        {errors.hasConnectedCompanies && <p className="error">{errors.hasConnectedCompanies}</p>}
       </div>
 
-      {/* Buttons */}
+      {/* Navigation Buttons */}
       <div style={{ marginTop: "20px" }}>
         <button onClick={onBack}>Back</button>{" "}
-        <button onClick={onNext} disabled={!formData.companyName || !formData.companySize}>
-          Next
-        </button>
+        <button onClick={handleNext}>Next</button>
       </div>
     </div>
   );
