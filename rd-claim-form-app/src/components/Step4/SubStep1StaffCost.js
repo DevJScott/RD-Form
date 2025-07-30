@@ -5,11 +5,16 @@ function SubStep1StaffCost({ formData, onChange }) {
     onChange(field, e.target.value);
   };
 
+  const companyName = formData.companyName || "the company";
+
   return (
     <div>
       <h3>Staff Costs</h3>
       <p><strong>Period:</strong> 01 October 2023 – 30 September 2024</p>
-      <p>If PLAYCRAFT LTD employed people during this claim period, it will have incurred costs such as salaries, pensions, NICs, and bonuses. These are all allowable for R&D.</p>
+      <p>
+        If {companyName} employed people during this claim period, it will have incurred
+        costs such as salaries, pensions, NICs, and bonuses. These are all allowable for R&D.
+      </p>
 
       <label>Salaries (£):</label>
       <input

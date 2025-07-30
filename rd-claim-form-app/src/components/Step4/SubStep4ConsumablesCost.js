@@ -6,8 +6,10 @@ function SubStep4ConsumablesCost({ formData, onChange }) {
     heatLightPaymentType = "",
     heatLightTotalCost = "",
     useDefaultHeatLightSplit = true,
-    heatLightProjectSplit = "21.66", // assuming default based on staff apportionment
+    heatLightProjectSplit = "21.66",
   } = formData;
+
+  const companyName = formData.companyName || "the company";
 
   const handleChange = (field) => (e) => {
     onChange(field, e.target.value);
@@ -23,7 +25,7 @@ function SubStep4ConsumablesCost({ formData, onChange }) {
 
       <p><strong>Raw Materials</strong></p>
       <p>
-        PLAYCRAFT LTD can claim for the cost of materials that have been used in its R&D.
+        {companyName} can claim for the cost of materials that have been used in its R&D.
       </p>
       <label>Total raw material expenditure (£):</label>
       <input
@@ -38,10 +40,11 @@ function SubStep4ConsumablesCost({ formData, onChange }) {
 
       <p><strong>Heat and Light</strong></p>
       <p>
-        In addition to raw materials, the heat and light costs associated with R&D can be included in the claim. Some companies are charged separately for these, while others pay for them as part of their rent.
+        In addition to raw materials, the heat and light costs associated with R&D can be included in the claim.
+        Some companies are charged separately for these, while others pay for them as part of their rent.
       </p>
 
-      <label>How did PLAYCRAFT LTD pay for heat and light?</label>
+      <label>How did {companyName} pay for heat and light?</label>
       <div>
         <label>
           <input
@@ -82,7 +85,7 @@ function SubStep4ConsumablesCost({ formData, onChange }) {
 
           <h4>Apportioning Heat & Light Costs to R&D Projects</h4>
           <p>
-            PLAYCRAFT LTD spent £{heatLightTotalCost || "0"} on heat and light during the claim period.
+            {companyName} spent £{heatLightTotalCost || "0"} on heat and light during the claim period.
             What percentage of this spend relates to the R&D project?
           </p>
 

@@ -1,7 +1,12 @@
 import React from "react";
 
 function SubStep6SubcontractorCost({ formData, onChange }) {
-  const { usedSubcontractors = "", subcontractorCosts = {}, projectSubcontractorSplit = {} } = formData;
+  const {
+    usedSubcontractors = "",
+    subcontractorCosts = {},
+    projectSubcontractorSplit = {},
+    companyName = "the company",
+  } = formData;
 
   const categories = [
     "Limited companies",
@@ -41,7 +46,7 @@ function SubStep6SubcontractorCost({ formData, onChange }) {
     <div>
       <h3>Subcontractor Cost</h3>
       <p>
-        PLAYCRAFT LTD can claim for subcontractors who helped it overcome technical difficulties.
+        {companyName} can claim for subcontractors who helped it overcome technical difficulties.
         Do not include marketing, sales, or admin contractors. Separate costs by connected vs. unconnected.
       </p>
 
@@ -54,7 +59,7 @@ function SubStep6SubcontractorCost({ formData, onChange }) {
             checked={usedSubcontractors === "no"}
             onChange={handleRadioChange}
           />{" "}
-          No, it didn’t use any subcontractors
+          No, {companyName} didn’t use any subcontractors
         </label>
         <br />
         <label>
@@ -65,7 +70,7 @@ function SubStep6SubcontractorCost({ formData, onChange }) {
             checked={usedSubcontractors === "yes"}
             onChange={handleRadioChange}
           />{" "}
-          Yes, it did use subcontractors who helped it overcome technical difficulties
+          Yes, {companyName} used subcontractors who helped overcome technical difficulties
         </label>
       </div>
 
@@ -103,11 +108,14 @@ function SubStep6SubcontractorCost({ formData, onChange }) {
 
           <h4>Project Apportionment</h4>
           <p>
-            Estimate what percentage of PLAYCRAFT LTD’s subcontractor cost was spent on the project below.
+            Estimate what percentage of {companyName}’s subcontractor cost was spent on the project below.
             Do not apply the 65% rule — it will be applied automatically.
           </p>
           <label>
-            <strong>Reducing the cost and increasing the logistical efficiency, and health & safety capabilities of pop-up soft play products</strong><br />
+            <strong>
+              Reducing the cost and increasing the logistical efficiency, and health & safety capabilities of pop-up soft play products
+            </strong>
+            <br />
             % of subcontractor cost:{" "}
             <input
               type="number"

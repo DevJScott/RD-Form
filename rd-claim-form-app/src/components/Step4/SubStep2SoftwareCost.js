@@ -5,10 +5,12 @@ function SubStep2SoftwareCost({ formData, onChange }) {
     onChange(field, e.target.value);
   };
 
+  const companyName = formData.companyName || "the company";
+
   return (
     <div>
       <h3>Software Costs</h3>
-      <p>PLAYCRAFT LTD can claim for software, cloud computing and data licence costs related to R&D.</p>
+      <p>{companyName} can claim for software, cloud computing and data licence costs related to R&D.</p>
 
       <label>Software (£):</label>
       <input

@@ -7,6 +7,8 @@ function SubStep5EPWCost({ formData, onChange }) {
     connectedEPWCost = ""
   } = formData;
 
+  const companyName = formData.companyName || "the company";
+
   const handleRadioChange = (e) => {
     const value = e.target.value;
     onChange("usedEPWs", value);
@@ -21,13 +23,13 @@ function SubStep5EPWCost({ formData, onChange }) {
       <h3>EPW (Externally Provided Workers) Cost</h3>
 
       <p>
-        It’s not just PLAYCRAFT LTD's own staff time that can be claimed for. You can also claim for
-        people who worked for PLAYCRAFT LTD, but who were paid by an external staff-provider rather
-        than PLAYCRAFT LTD. These are known as ‘Externally Provided Workers’ (EPWs).
+        It’s not just {companyName}'s own staff time that can be claimed for. You can also claim for
+        people who worked for {companyName}, but who were paid by an external staff-provider rather
+        than {companyName}. These are known as ‘Externally Provided Workers’ (EPWs).
       </p>
 
       <p>
-        If PLAYCRAFT LTD paid a company for workers who operated under its direction, these may
+        If {companyName} paid a company for workers who operated under its direction, these may
         qualify. But if it paid a company to do a specific job, that’s subcontracted R&D and is
         covered in the next section.
       </p>
@@ -37,7 +39,7 @@ function SubStep5EPWCost({ formData, onChange }) {
         or (2) their costs (salaries, NICs, pensions, bonuses, reimbursed R&D expenses).
       </p>
 
-      <label><strong>Did PLAYCRAFT LTD use any externally provided workers?</strong></label>
+      <label><strong>Did {companyName} use any externally provided workers?</strong></label>
       <div style={{ marginBottom: "15px" }}>
         <label>
           <input
@@ -47,7 +49,7 @@ function SubStep5EPWCost({ formData, onChange }) {
             checked={usedEPWs === "no"}
             onChange={handleRadioChange}
           />{" "}
-          No, PLAYCRAFT LTD didn’t use any externally provided workers
+          No, {companyName} didn’t use any externally provided workers
         </label>
         <br />
         <label>
@@ -58,7 +60,7 @@ function SubStep5EPWCost({ formData, onChange }) {
             checked={usedEPWs === "yes"}
             onChange={handleRadioChange}
           />{" "}
-          Yes, PLAYCRAFT LTD used externally provided workers
+          Yes, {companyName} used externally provided workers
         </label>
       </div>
 
@@ -76,7 +78,7 @@ function SubStep5EPWCost({ formData, onChange }) {
           </label>
           <br /><br />
           <label>
-            For *connected* staff providers, relevant total cost amount (£):
+            For <em>connected</em> staff providers, relevant total cost amount (£):
             <input
               type="number"
               min="0"

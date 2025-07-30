@@ -3,6 +3,7 @@ import React from "react";
 function SubStep12Titles({ formData, onChange }) {
   const projectCount = parseInt(formData.projectCount) || 1;
   const titles = formData.projectTitles || [];
+  const companyName = formData.companyName || "the company";
 
   const updateTitle = (index, field, value) => {
     const updated = [...titles];
@@ -29,7 +30,9 @@ function SubStep12Titles({ formData, onChange }) {
     <div>
       <h3>Project Titles</h3>
       <p>
-        HMRC require a certain number of PLAYCRAFT LTD’s projects to be described in detail. The number of projects described depends on how many projects are being included in the claim, and what proportion of the overall costs they represent.
+        HMRC require a certain number of {companyName}’s projects to be described in detail.
+        The number of projects described depends on how many projects are being included in the claim,
+        and what proportion of the overall costs they represent.
       </p>
       <p><strong>HMRC’s rules are as follows:</strong></p>
       <ul>
@@ -77,7 +80,7 @@ function SubStep12Titles({ formData, onChange }) {
                 checked={project.subcontractedByLarge || false}
                 onChange={(e) => updateTitle(index, "subcontractedByLarge", e.target.checked)}
               />{" "}
-              This project was subcontracted to PLAYCRAFT LTD by a large company
+              This project was subcontracted to {companyName} by a large company
             </label>
           </div>
         ))}

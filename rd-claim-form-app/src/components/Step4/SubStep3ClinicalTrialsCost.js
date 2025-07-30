@@ -9,7 +9,8 @@ function SubStep3ClinicalTrialsCost({ formData, onChange }) {
     phase4Cost = ""
   } = formData;
 
-  // Clear phase values when checkbox is selected
+  const companyName = formData.companyName || "the company";
+
   useEffect(() => {
     if (noClinicalTrials) {
       onChange("phase1Cost", "");
@@ -20,8 +21,7 @@ function SubStep3ClinicalTrialsCost({ formData, onChange }) {
   }, [noClinicalTrials, onChange]);
 
   const handleChange = (field) => (e) => {
-    const val = e.target.value;
-    onChange(field, val);
+    onChange(field, e.target.value);
   };
 
   const renderInput = (label, value, field) => (
@@ -43,7 +43,7 @@ function SubStep3ClinicalTrialsCost({ formData, onChange }) {
     <div>
       <h3>Clinical Trials Cost</h3>
       <p>
-        PLAYCRAFT LTD can include payments made to volunteers for clinical trial participation during the claim period.
+        {companyName} can include payments made to volunteers for clinical trial participation during the claim period.
       </p>
 
       <label>

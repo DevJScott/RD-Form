@@ -106,7 +106,7 @@ function SubStep7ScienceArea({ formData, onChange }) {
         "Water resources", "Hydrology", "Environmental biotechnology"
       ], "environment")}
 
-      <p style={{ color: "#555", fontStyle: "italic" }}>
+      <p style={{ color: "#333", fontStyle: "italic" }}>
         Note: HMRC excludes fields like art, humanities, law, economics, and social sciences from R&D claims.
       </p>
     </div>
