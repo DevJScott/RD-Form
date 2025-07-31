@@ -1,5 +1,5 @@
 // Create a new claim with client association
-exports.createClaim = async (req, res) => {
+const createClaim = async (req, res) => {
   try {
     const { formData, isDraft = true, clientId, claimTitle } = req.body;
     const userId = req.user.userId;
@@ -136,7 +136,7 @@ const getUnfinishedClaims = async (req, res) => {
 };
 
 // Update claim with autosave
-exports.updateClaim = async (req, res) => {
+const updateClaim = async (req, res) => {
   try {
     const { id } = req.params;
     const { formData, isDraft, currentStep, claimTitle } = req.body;
@@ -170,7 +170,7 @@ exports.updateClaim = async (req, res) => {
 };
 
 // Autosave claim (lightweight update)
-exports.autosaveClaim = async (req, res) => {
+const autosaveClaim = async (req, res) => {
   try {
     const { id } = req.params;
     const { formData, currentStep } = req.body;
@@ -199,7 +199,7 @@ exports.autosaveClaim = async (req, res) => {
   }
 };
 
-exports.deleteClaim = async (req, res) => {
+const deleteClaim = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
