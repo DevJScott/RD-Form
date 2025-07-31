@@ -45,26 +45,42 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
 
+// ✅ Clean and validate environment variables
+let mongoUri = process.env.MONGO_URI;
+let jwtSecret = process.env.JWT_SECRET;
+
+// Clean up potential formatting issues
+if (mongoUri && mongoUri.startsWith('MONGO_URI=')) {
+  mongoUri = mongoUri.substring('MONGO_URI='.length);
+}
+if (jwtSecret && jwtSecret.startsWith('JWT_SECRET=')) {
+  jwtSecret = jwtSecret.substring('JWT_SECRET='.length);
+}
+
+// Trim any whitespace
+mongoUri = mongoUri ? mongoUri.trim() : null;
+jwtSecret = jwtSecret ? jwtSecret.trim() : null;
+
 // ✅ Debug environment variables
-console.log("🔍 MONGO_URI:", process.env.MONGO_URI ? "Found" : "Not found");
-console.log("🔍 JWT_SECRET:", process.env.JWT_SECRET ? "Found" : "Not found");
-console.log("🔍 Full MONGO_URI (first 20 chars):", process.env.MONGO_URI ? process.env.MONGO_URI.substring(0, 20) + "..." : "undefined");
+console.log("🔍 MONGO_URI:", mongoUri ? "Found" : "Not found");
+console.log("🔍 JWT_SECRET:", jwtSecret ? "Found" : "Not found");
+console.log("🔍 Full MONGO_URI (first 20 chars):", mongoUri ? mongoUri.substring(0, 20) + "..." : "undefined");
 
 // ✅ Validate MongoDB URI before connecting
-if (!process.env.MONGO_URI) {
+if (!mongoUri) {
   console.error("❌ MONGO_URI environment variable is not set!");
   process.exit(1);
 }
 
-if (!process.env.MONGO_URI.startsWith('mongodb://') && !process.env.MONGO_URI.startsWith('mongodb+srv://')) {
+if (!mongoUri.startsWith('mongodb://') && !mongoUri.startsWith('mongodb+srv://')) {
   console.error("❌ Invalid MongoDB URI format. Must start with mongodb:// or mongodb+srv://");
-  console.error("Current URI:", process.env.MONGO_URI);
+  console.error("Current URI:", mongoUri);
   process.exit(1);
 }
 
 // ✅ Connect to MongoDB and start the server
 mongoose
-  .connect(process.env.MONGO_URI.trim())
+  .connect(mongoUri)
   .then(() => {
     console.log("✅ MongoDB connected");
 
