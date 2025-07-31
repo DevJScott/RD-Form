@@ -2,8 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config();
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+require("dotenv").config({ path: path.resolve(__dirname, '../.env') });
 
 // ✅ Import your route handlers
 const claimRoutes = require("./routes/claimRoutes");
@@ -45,6 +44,10 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
+
+// ✅ Debug environment variables
+console.log("🔍 MONGO_URI:", process.env.MONGO_URI ? "Found" : "Not found");
+console.log("🔍 JWT_SECRET:", process.env.JWT_SECRET ? "Found" : "Not found");
 
 // ✅ Connect to MongoDB and start the server
 mongoose
