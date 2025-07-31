@@ -98,19 +98,27 @@ async function startServer() {
     await client.query(`
       CREATE TABLE IF NOT EXISTS clients (
         id SERIAL PRIMARY KEY,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        company_name VARCHAR(255),
-        contact_name VARCHAR(255),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        email VARCHAR(255) NOT NULL,
+        company_name VARCHAR(255) NOT NULL,
+        contact_name VARCHAR(255) NOT NULL,
+        phone VARCHAR(50),
+        address TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, email)
       )
     `);
     
     await client.query(`
       CREATE TABLE IF NOT EXISTS claims (
         id SERIAL PRIMARY KEY,
-        client_id INTEGER REFERENCES clients(id),
-        form_data JSONB NOT NULL,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+        claim_title VARCHAR(255),
+        form_data JSONB NOT NULL DEFAULT '{}',
         is_draft BOOLEAN DEFAULT true,
+        current_step INTEGER DEFAULT 1,
+        last_saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )

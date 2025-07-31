@@ -1,12 +1,12 @@
-
 // Create a new client
-const createClient = async (req, res) => {
+exports.createClient = async (req, res) => {
   try {
-    const { email, companyName, contactName } = req.body;
+    const { email, companyName, contactName, phone, address } = req.body;
+    const userId = req.user.userId;
 
     // Input validation
-    if (!email) {
-      return res.status(400).json({ error: "Email is required" });
+    if (!email || !companyName || !contactName) {
+      return res.status(400).json({ error: "Email, company name, and contact name are required" });
     }
 
     // Email validation
@@ -17,24 +17,20 @@ const createClient = async (req, res) => {
 
     const pool = req.app.locals.db;
 
-    // Check if client already exists
+    // Check if client already exists for this user
     const existingClient = await pool.query(
-      'SELECT id FROM clients WHERE email = $1',
-      [email.toLowerCase().trim()]
+      'SELECT id FROM clients WHERE user_id = $1 AND email = $2',
+      [userId, email.toLowerCase().trim()]
     );
 
     if (existingClient.rows.length > 0) {
-      return res.status(400).json({ error: "Client with this email already exists" });
+      return res.status(400).json({ error: "Client with this email already exists for your account" });
     }
 
     // Create client
     const result = await pool.query(
-      'INSERT INTO clients (email, company_name, contact_name) VALUES ($1, $2, $3) RETURNING *',
-      [
-        email.toLowerCase().trim(),
-        companyName ? companyName.trim() : null,
-        contactName ? contactName.trim() : null
-      ]
+      'INSERT INTO clients (user_id, email, company_name, contact_name, phone, address) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [userId, email.toLowerCase().trim(), companyName.trim(), contactName.trim(), phone?.trim() || null, address?.trim() || null]
     );
 
     res.status(201).json({
@@ -47,13 +43,14 @@ const createClient = async (req, res) => {
   }
 };
 
-// Get all clients
-const getAllClients = async (req, res) => {
+// Get all clients for the authenticated user
+exports.getAllClients = async (req, res) => {
   try {
+    const userId = req.user.userId;
     const pool = req.app.locals.db;
-    
     const result = await pool.query(
-      'SELECT * FROM clients ORDER BY created_at DESC'
+      'SELECT * FROM clients WHERE user_id = $1 ORDER BY created_at DESC',
+      [userId]
     );
 
     res.json({ clients: result.rows });
@@ -67,14 +64,14 @@ const getAllClients = async (req, res) => {
 const getClientById = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Validate ID is a number
     if (!/^\d+$/.test(id)) {
       return res.status(400).json({ error: "Invalid client ID" });
     }
 
     const pool = req.app.locals.db;
-    
+
     const result = await pool.query(
       'SELECT * FROM clients WHERE id = $1',
       [parseInt(id)]

@@ -1,9 +1,8 @@
-
-// Create a new claim
-const createClaim = async (req, res) => {
+// Create a new claim with client association
+exports.createClaim = async (req, res) => {
   try {
-    const { clientId, formData, isDraft = true } = req.body;
-    const userId = req.user.userId; // From auth middleware
+    const { formData, isDraft = true, clientId, claimTitle } = req.body;
+    const userId = req.user.userId;
 
     // Input validation
     if (!formData || typeof formData !== 'object') {
@@ -16,15 +15,9 @@ const createClaim = async (req, res) => {
     }
 
     const pool = req.app.locals.db;
-
-    // Create claim
     const result = await pool.query(
-      'INSERT INTO claims (client_id, form_data, is_draft, created_at, updated_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *',
-      [
-        clientId ? parseInt(clientId) : null,
-        JSON.stringify(formData),
-        isDraft
-      ]
+      'INSERT INTO claims (user_id, client_id, claim_title, form_data, is_draft, current_step) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [userId, clientId || null, claimTitle || 'New R&D Claim', JSON.stringify(formData), isDraft, 1]
     );
 
     res.status(201).json({
@@ -128,31 +121,21 @@ const getUnfinishedClaims = async (req, res) => {
   }
 };
 
-// Update a claim
-const updateClaim = async (req, res) => {
+// Update claim with autosave
+exports.updateClaim = async (req, res) => {
   try {
     const { id } = req.params;
-    const { formData, isDraft } = req.body;
-
-    // Validate ID is a number
-    if (!/^\d+$/.test(id)) {
-      return res.status(400).json({ error: "Invalid claim ID" });
-    }
-
-    // Input validation
-    if (formData && typeof formData !== 'object') {
-      return res.status(400).json({ error: "Valid form data is required" });
-    }
+    const { formData, isDraft, currentStep, claimTitle } = req.body;
+    const userId = req.user.userId;
 
     const pool = req.app.locals.db;
-
     const result = await pool.query(
-      'UPDATE claims SET form_data = COALESCE($1, form_data), is_draft = COALESCE($2, is_draft), updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *',
-      [
-        formData ? JSON.stringify(formData) : null,
-        isDraft,
-        parseInt(id)
-      ]
+      `UPDATE claims 
+       SET form_data = $1, is_draft = $2, current_step = $3, claim_title = $4, 
+           last_saved_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP 
+       WHERE id = $5 AND user_id = $6 
+       RETURNING *`,
+      [JSON.stringify(formData), isDraft, currentStep || 1, claimTitle || 'R&D Claim', id, userId]
     );
 
     if (result.rows.length === 0) {
@@ -172,21 +155,45 @@ const updateClaim = async (req, res) => {
   }
 };
 
-// Delete a claim
-const deleteClaim = async (req, res) => {
+// Autosave claim (lightweight update)
+exports.autosaveClaim = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Validate ID is a number
-    if (!/^\d+$/.test(id)) {
-      return res.status(400).json({ error: "Invalid claim ID" });
-    }
+    const { formData, currentStep } = req.body;
+    const userId = req.user.userId;
 
     const pool = req.app.locals.db;
-
     const result = await pool.query(
-      'DELETE FROM claims WHERE id = $1 RETURNING *',
-      [parseInt(id)]
+      `UPDATE claims 
+       SET form_data = $1, current_step = $2, last_saved_at = CURRENT_TIMESTAMP 
+       WHERE id = $3 AND user_id = $4 
+       RETURNING id, last_saved_at`,
+      [JSON.stringify(formData), currentStep || 1, id, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Claim not found" });
+    }
+
+    res.json({ 
+      message: "Claim autosaved", 
+      lastSaved: result.rows[0].last_saved_at 
+    });
+  } catch (err) {
+    console.error("Autosave claim error:", err);
+    res.status(500).json({ error: "Failed to autosave claim" });
+  }
+};
+
+exports.deleteClaim = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    const pool = req.app.locals.db;
+    const result = await pool.query(
+      'DELETE FROM claims WHERE id = $1 AND user_id = $2 RETURNING *', 
+      [id, userId]
     );
 
     if (result.rows.length === 0) {
@@ -194,17 +201,8 @@ const deleteClaim = async (req, res) => {
     }
 
     res.json({ message: "Claim deleted successfully" });
-  } catch (error) {
-    console.error("Delete claim error:", error);
-    res.status(500).json({ error: "Internal server error" });
+  } catch (err) {
+    console.error("Delete claim error:", err);
+    res.status(500).json({ error: "Failed to delete claim" });
   }
-};
-
-module.exports = {
-  createClaim,
-  getAllClaims,
-  getUserClaims,
-  getUnfinishedClaims,
-  updateClaim,
-  deleteClaim
 };

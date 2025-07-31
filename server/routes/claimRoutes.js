@@ -6,6 +6,7 @@ const {
   getUserClaims,
   getUnfinishedClaims,
   updateClaim,
+  autosaveClaim,
   deleteClaim,
 } = require("../controllers/claimController");
 
@@ -18,6 +19,7 @@ router.get("/", authenticate, getUserClaims);
 router.get("/all", authenticate, getAllClaims);
 router.get("/unfinished", authenticate, getUnfinishedClaims);
 router.patch("/:id", authenticate, updateClaim);
+router.post("/:id/autosave", authenticate, autosaveClaim);
 router.delete("/:id", authenticate, deleteClaim);
 
 module.exports = router;
