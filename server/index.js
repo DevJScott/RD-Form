@@ -1,5 +1,5 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const { Pool } = require("pg");
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, '../.env') });
@@ -46,49 +46,90 @@ app.use((req, res) => {
 });
 
 // ✅ Clean and validate environment variables
-let mongoUri = process.env.MONGO_URI;
+let databaseUrl = process.env.DATABASE_URL;
 let jwtSecret = process.env.JWT_SECRET;
 
 // Clean up potential formatting issues
-if (mongoUri && mongoUri.startsWith('MONGO_URI=')) {
-  mongoUri = mongoUri.substring('MONGO_URI='.length);
-}
 if (jwtSecret && jwtSecret.startsWith('JWT_SECRET=')) {
   jwtSecret = jwtSecret.substring('JWT_SECRET='.length);
 }
 
 // Trim any whitespace
-mongoUri = mongoUri ? mongoUri.trim() : null;
+databaseUrl = databaseUrl ? databaseUrl.trim() : null;
 jwtSecret = jwtSecret ? jwtSecret.trim() : null;
 
 // ✅ Debug environment variables
-console.log("🔍 MONGO_URI:", mongoUri ? "Found" : "Not found");
+console.log("🔍 DATABASE_URL:", databaseUrl ? "Found" : "Not found");
 console.log("🔍 JWT_SECRET:", jwtSecret ? "Found" : "Not found");
-console.log("🔍 Full MONGO_URI (first 20 chars):", mongoUri ? mongoUri.substring(0, 20) + "..." : "undefined");
 
-// ✅ Validate MongoDB URI before connecting
-if (!mongoUri) {
-  console.error("❌ MONGO_URI environment variable is not set!");
+// ✅ Set up PostgreSQL connection pool
+let pool;
+if (databaseUrl) {
+  pool = new Pool({
+    connectionString: databaseUrl,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
+} else {
+  console.error("❌ DATABASE_URL environment variable is not set!");
+  console.log("💡 Please create a PostgreSQL database in Replit");
   process.exit(1);
 }
 
-if (!mongoUri.startsWith('mongodb://') && !mongoUri.startsWith('mongodb+srv://')) {
-  console.error("❌ Invalid MongoDB URI format. Must start with mongodb:// or mongodb+srv://");
-  console.error("Current URI:", mongoUri);
-  process.exit(1);
-}
-
-// ✅ Connect to MongoDB and start the server
-mongoose
-  .connect(mongoUri)
-  .then(() => {
-    console.log("✅ MongoDB connected");
+// ✅ Test database connection and start server
+async function startServer() {
+  try {
+    const client = await pool.connect();
+    console.log("✅ PostgreSQL connected");
+    
+    // Create tables if they don't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'user',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS clients (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        company_name VARCHAR(255),
+        contact_name VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS claims (
+        id SERIAL PRIMARY KEY,
+        client_id INTEGER REFERENCES clients(id),
+        form_data JSONB NOT NULL,
+        is_draft BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    client.release();
+    console.log("✅ Database tables created/verified");
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server is running on port ${PORT}`);
     });
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-  });
+  } catch (err) {
+    console.error("❌ PostgreSQL connection error:", err);
+    process.exit(1);
+  }
+}
+
+// Export pool for use in other files
+app.locals.db = pool;
+
+startServer();
