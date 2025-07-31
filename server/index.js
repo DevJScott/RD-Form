@@ -48,15 +48,28 @@ app.use((req, res) => {
 // ✅ Debug environment variables
 console.log("🔍 MONGO_URI:", process.env.MONGO_URI ? "Found" : "Not found");
 console.log("🔍 JWT_SECRET:", process.env.JWT_SECRET ? "Found" : "Not found");
+console.log("🔍 Full MONGO_URI (first 20 chars):", process.env.MONGO_URI ? process.env.MONGO_URI.substring(0, 20) + "..." : "undefined");
+
+// ✅ Validate MongoDB URI before connecting
+if (!process.env.MONGO_URI) {
+  console.error("❌ MONGO_URI environment variable is not set!");
+  process.exit(1);
+}
+
+if (!process.env.MONGO_URI.startsWith('mongodb://') && !process.env.MONGO_URI.startsWith('mongodb+srv://')) {
+  console.error("❌ Invalid MongoDB URI format. Must start with mongodb:// or mongodb+srv://");
+  console.error("Current URI:", process.env.MONGO_URI);
+  process.exit(1);
+}
 
 // ✅ Connect to MongoDB and start the server
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI.trim())
   .then(() => {
     console.log("✅ MongoDB connected");
 
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server is running on port ${PORT}`);
     });
   })
