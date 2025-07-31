@@ -6,6 +6,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
@@ -23,10 +24,10 @@ const RegisterPage = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/register", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, name }),
       });
 
       const data = await res.json();
@@ -44,6 +45,14 @@ const RegisterPage = () => {
     <div className="auth-container">
       <h2>Register</h2>
       <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          required
+          onChange={(e) => setName(e.target.value)}
+        />
+
         <input
           type="email"
           placeholder="Email"
