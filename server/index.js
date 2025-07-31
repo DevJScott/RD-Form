@@ -16,14 +16,20 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://devjscott.github.io",
   `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`,
-];
+  "https://rd-claim-monorepo.devjscott.repl.co", // Add current Repl URL
+  process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : null,
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      console.log("🔍 CORS request from origin:", origin);
+      console.log("🔍 Allowed origins:", allowedOrigins);
+      
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
+      console.log("❌ CORS blocked origin:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
