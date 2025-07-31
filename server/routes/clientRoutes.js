@@ -15,7 +15,7 @@ const router = express.Router();
 router.post("/", authenticate, createClient);
 router.get("/", authenticate, getAllClients);
 router.get("/:id", authenticate, getClientById);
-router.put("/:id", authenticate, updateClient);
+router.patch("/:id", authenticate, updateClient);
 router.delete("/:id", authenticate, deleteClient);
 
 module.exports = router;

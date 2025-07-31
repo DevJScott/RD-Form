@@ -1,31 +1,35 @@
 
-const Claim = require("../models/Claim");
-const Client = require("../models/Client");
-
 // Create a new claim
 const createClaim = async (req, res) => {
   try {
     const { clientId, formData, isDraft = true } = req.body;
+    const userId = req.user.userId; // From auth middleware
 
-    // Validate required fields
-    if (!formData) {
-      return res.status(400).json({ error: "Form data is required" });
+    // Input validation
+    if (!formData || typeof formData !== 'object') {
+      return res.status(400).json({ error: "Valid form data is required" });
     }
 
-    // Create new claim
-    const claim = new Claim({
-      client: clientId || null,
-      formData,
-      isDraft,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+    // Validate clientId if provided
+    if (clientId && !/^\d+$/.test(clientId)) {
+      return res.status(400).json({ error: "Invalid client ID" });
+    }
 
-    await claim.save();
+    const pool = req.app.locals.db;
+
+    // Create claim
+    const result = await pool.query(
+      'INSERT INTO claims (client_id, form_data, is_draft, created_at, updated_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *',
+      [
+        clientId ? parseInt(clientId) : null,
+        JSON.stringify(formData),
+        isDraft
+      ]
+    );
 
     res.status(201).json({
       message: "Claim created successfully",
-      claim
+      claim: result.rows[0]
     });
   } catch (error) {
     console.error("Create claim error:", error);
@@ -36,9 +40,25 @@ const createClaim = async (req, res) => {
 // Get all claims (admin only)
 const getAllClaims = async (req, res) => {
   try {
-    const claims = await Claim.find()
-      .populate('client')
-      .sort({ createdAt: -1 });
+    const pool = req.app.locals.db;
+
+    const result = await pool.query(`
+      SELECT c.*, cl.email as client_email, cl.company_name, cl.contact_name
+      FROM claims c
+      LEFT JOIN clients cl ON c.client_id = cl.id
+      ORDER BY c.created_at DESC
+    `);
+
+    const claims = result.rows.map(row => ({
+      ...row,
+      form_data: typeof row.form_data === 'string' ? JSON.parse(row.form_data) : row.form_data,
+      client: row.client_id ? {
+        id: row.client_id,
+        email: row.client_email,
+        companyName: row.company_name,
+        contactName: row.contact_name
+      } : null
+    }));
 
     res.json({ claims });
   } catch (error) {
@@ -50,9 +70,25 @@ const getAllClaims = async (req, res) => {
 // Get user's claims
 const getUserClaims = async (req, res) => {
   try {
-    const claims = await Claim.find()
-      .populate('client')
-      .sort({ createdAt: -1 });
+    const pool = req.app.locals.db;
+
+    const result = await pool.query(`
+      SELECT c.*, cl.email as client_email, cl.company_name, cl.contact_name
+      FROM claims c
+      LEFT JOIN clients cl ON c.client_id = cl.id
+      ORDER BY c.created_at DESC
+    `);
+
+    const claims = result.rows.map(row => ({
+      ...row,
+      form_data: typeof row.form_data === 'string' ? JSON.parse(row.form_data) : row.form_data,
+      client: row.client_id ? {
+        id: row.client_id,
+        email: row.client_email,
+        companyName: row.company_name,
+        contactName: row.contact_name
+      } : null
+    }));
 
     res.json({ claims });
   } catch (error) {
@@ -64,9 +100,26 @@ const getUserClaims = async (req, res) => {
 // Get unfinished claims
 const getUnfinishedClaims = async (req, res) => {
   try {
-    const claims = await Claim.find({ isDraft: true })
-      .populate('client')
-      .sort({ createdAt: -1 });
+    const pool = req.app.locals.db;
+
+    const result = await pool.query(`
+      SELECT c.*, cl.email as client_email, cl.company_name, cl.contact_name
+      FROM claims c
+      LEFT JOIN clients cl ON c.client_id = cl.id
+      WHERE c.is_draft = true
+      ORDER BY c.created_at DESC
+    `);
+
+    const claims = result.rows.map(row => ({
+      ...row,
+      form_data: typeof row.form_data === 'string' ? JSON.parse(row.form_data) : row.form_data,
+      client: row.client_id ? {
+        id: row.client_id,
+        email: row.client_email,
+        companyName: row.company_name,
+        contactName: row.contact_name
+      } : null
+    }));
 
     res.json({ claims });
   } catch (error) {
@@ -81,19 +134,33 @@ const updateClaim = async (req, res) => {
     const { id } = req.params;
     const { formData, isDraft } = req.body;
 
-    const claim = await Claim.findByIdAndUpdate(
-      id,
-      { 
-        formData, 
-        isDraft, 
-        updatedAt: new Date() 
-      },
-      { new: true }
-    ).populate('client');
+    // Validate ID is a number
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).json({ error: "Invalid claim ID" });
+    }
 
-    if (!claim) {
+    // Input validation
+    if (formData && typeof formData !== 'object') {
+      return res.status(400).json({ error: "Valid form data is required" });
+    }
+
+    const pool = req.app.locals.db;
+
+    const result = await pool.query(
+      'UPDATE claims SET form_data = COALESCE($1, form_data), is_draft = COALESCE($2, is_draft), updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *',
+      [
+        formData ? JSON.stringify(formData) : null,
+        isDraft,
+        parseInt(id)
+      ]
+    );
+
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: "Claim not found" });
     }
+
+    const claim = result.rows[0];
+    claim.form_data = typeof claim.form_data === 'string' ? JSON.parse(claim.form_data) : claim.form_data;
 
     res.json({
       message: "Claim updated successfully",
@@ -110,9 +177,19 @@ const deleteClaim = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const claim = await Claim.findByIdAndDelete(id);
+    // Validate ID is a number
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).json({ error: "Invalid claim ID" });
+    }
 
-    if (!claim) {
+    const pool = req.app.locals.db;
+
+    const result = await pool.query(
+      'DELETE FROM claims WHERE id = $1 RETURNING *',
+      [parseInt(id)]
+    );
+
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: "Claim not found" });
     }
 
