@@ -6,9 +6,9 @@ require("dotenv").config();
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 // ✅ Import your route handlers
-//const claimRoutes = require("./routes/claimRoutes");
-//const clientRoutes = require("./routes/clientRoutes");
-//const authRoutes = require("./routes/authRoutes");
+const claimRoutes = require("./routes/claimRoutes");
+const clientRoutes = require("./routes/clientRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -35,9 +35,9 @@ app.use(
 app.use(express.json());
 
 // ✅ API routes
-//app.use("/api/claims", claimRoutes);
-//app.use("/api/clients", clientRoutes);
-//app.use("/api/auth", authRoutes);
+app.use("/api/claims", claimRoutes);
+app.use("/api/clients", clientRoutes);
+app.use("/api/auth", authRoutes);
 
 // ✅ Serve React frontend (built version)
 app.use(express.static(path.join(__dirname, "../client/build")));
