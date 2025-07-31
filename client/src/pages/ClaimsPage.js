@@ -8,7 +8,7 @@ const ClaimsPage = () => {
   useEffect(() => {
     const fetchClaims = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/claims", {
+        const res = await fetch("/api/claims", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -33,10 +33,10 @@ const ClaimsPage = () => {
       ) : (
         <ul>
           {claims.map((claim, index) => (
-            <li key={claim._id || index} style={{ marginBottom: "1rem" }}>
-              <strong>Company:</strong> {claim.companyName || "Unnamed Company"}<br />
-              <strong>Claim Period:</strong> {claim.claimStartDate} – {claim.claimEndDate}<br />
-              <strong>Status:</strong> {claim.isComplete ? "✅ Complete" : "📝 In Progress"}
+            <li key={claim.id || index} style={{ marginBottom: "1rem" }}>
+              <strong>Company:</strong> {claim.company_name || claim.form_data?.companyName || "Unnamed Company"}<br />
+              <strong>Claim Period:</strong> {claim.form_data?.claimStartDate} – {claim.form_data?.claimEndDate}<br />
+              <strong>Status:</strong> {claim.is_draft ? "📝 In Progress" : "✅ Complete"}
             </li>
           ))}
         </ul>

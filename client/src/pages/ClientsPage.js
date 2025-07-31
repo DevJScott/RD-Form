@@ -5,7 +5,11 @@ const ClientsPage = () => {
   const [clients, setClients] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/clients")
+    fetch("/api/clients", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => setClients(data))
       .catch((err) => console.error("Failed to load clients"));
@@ -16,7 +20,7 @@ const ClientsPage = () => {
       <h2>Clients</h2>
       <ul>
         {clients.map((client) => (
-          <li key={client._id}>{client.companyName}</li>
+          <li key={client.id}>{client.company_name}</li>
         ))}
       </ul>
     </div>

@@ -63,30 +63,44 @@ const getAllClaims = async (req, res) => {
 // Get user's claims
 const getUserClaims = async (req, res) => {
   try {
-    const pool = req.app.locals.db;
+    const userId = req.user.id;
+    const result = await req.app.locals.db.query(
+      `SELECT c.*, cl.company_name, cl.contact_name 
+       FROM claims c 
+       LEFT JOIN clients cl ON c.client_id = cl.id 
+       WHERE c.user_id = $1 
+       ORDER BY c.updated_at DESC`,
+      [userId]
+    );
 
-    const result = await pool.query(`
-      SELECT c.*, cl.email as client_email, cl.company_name, cl.contact_name
-      FROM claims c
-      LEFT JOIN clients cl ON c.client_id = cl.id
-      ORDER BY c.created_at DESC
-    `);
-
-    const claims = result.rows.map(row => ({
-      ...row,
-      form_data: typeof row.form_data === 'string' ? JSON.parse(row.form_data) : row.form_data,
-      client: row.client_id ? {
-        id: row.client_id,
-        email: row.client_email,
-        companyName: row.company_name,
-        contactName: row.contact_name
-      } : null
-    }));
-
-    res.json({ claims });
+    res.json(result.rows);
   } catch (error) {
-    console.error("Get user claims error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching user claims:", error);
+    res.status(500).json({ error: "Failed to fetch claims" });
+  }
+};
+
+const getClaim = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const result = await req.app.locals.db.query(
+      `SELECT c.*, cl.company_name, cl.contact_name 
+       FROM claims c 
+       LEFT JOIN clients cl ON c.client_id = cl.id 
+       WHERE c.id = $1 AND c.user_id = $2`,
+      [id, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Claim not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching claim:", error);
+    res.status(500).json({ error: "Failed to fetch claim" });
   }
 };
 
@@ -205,4 +219,15 @@ exports.deleteClaim = async (req, res) => {
     console.error("Delete claim error:", err);
     res.status(500).json({ error: "Failed to delete claim" });
   }
+};
+
+module.exports = {
+  createClaim,
+  getAllClaims,
+  getUserClaims,
+  getUnfinishedClaims,
+  getClaim,
+  updateClaim,
+  autosaveClaim,
+  deleteClaim,
 };

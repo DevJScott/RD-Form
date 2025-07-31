@@ -110,7 +110,7 @@ function ClaimApp() {
 
     const fetchClaim = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/claims/${claimId}`, {
+        const res = await fetch(`/api/claims/${claimId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -118,7 +118,10 @@ function ClaimApp() {
 
         const data = await res.json();
         if (res.ok) {
-          setFormData({ ...defaultFormData, ...data }); // fill in blanks too
+          // Merge form_data from PostgreSQL with default form data
+          const formData = data.form_data || {};
+          setFormData({ ...defaultFormData, ...formData });
+          setStep(data.current_step || 1);
         } else {
           console.error("❌ Error fetching claim:", data.error);
         }
@@ -137,7 +140,7 @@ function ClaimApp() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/claims${claimId ? `/${claimId}` : ""}`,
+        `/api/claims${claimId ? `/${claimId}` : ""}`,
         {
           method: claimId ? "PATCH" : "POST",
           headers: {
@@ -149,7 +152,7 @@ function ClaimApp() {
       );
 
       const saved = await res.json();
-      if (!claimId && saved._id) setClaimId(saved._id);
+      if (!claimId && saved.id) setClaimId(saved.id);
     } catch (err) {
       console.error("Auto-save error:", err);
     }
