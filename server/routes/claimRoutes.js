@@ -1,21 +1,18 @@
-const jwt = require("jsonwebtoken");
+const express = require("express");
+const {
+  createClaim,
+  getAllClaims,
+  getUserClaims,
+  getUnfinishedClaims,
+} = require("../controllers/claimController");
 
-const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+const authenticate = require("../middleware/authMiddleware");
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Unauthorized - No token" });
-  }
+const router = express.Router();
 
-  const token = authHeader.split(" ")[1];
+router.post("/", authenticate, createClaim);
+router.get("/", authenticate, getUserClaims);
+router.get("/all", authenticate, getAllClaims);
+router.get("/unfinished", authenticate, getUnfinishedClaims);
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { _id: decoded.userId }; // 👈 Keep it lightweight
-    next();
-  } catch (err) {
-    return res.status(401).json({ error: "Token invalid or expired" });
-  }
-};
-
-module.exports = authenticate;
+module.exports = router;
