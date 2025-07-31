@@ -1,5 +1,5 @@
 // Create a new client
-exports.createClient = async (req, res) => {
+const createClient = async (req, res) => {
   try {
     const { email, companyName, contactName, phone, address } = req.body;
     const userId = req.user.userId;
@@ -44,7 +44,7 @@ exports.createClient = async (req, res) => {
 };
 
 // Get all clients for the authenticated user
-exports.getAllClients = async (req, res) => {
+const getAllClients = async (req, res) => {
   try {
     const userId = req.user.userId;
     const pool = req.app.locals.db;
