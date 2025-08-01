@@ -11,7 +11,7 @@ const ClientsPage = () => {
       },
     })
       .then((res) => res.json())
-      .then((data) => setClients(data))
+      .then((data) => setClients(data.clients || []))
       .catch((err) => console.error("Failed to load clients"));
   }, []);
 

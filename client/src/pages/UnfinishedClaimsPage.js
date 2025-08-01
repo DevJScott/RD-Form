@@ -1,11 +1,8 @@
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-function ViewClaimsPage() {
+function UnfinishedClaimsPage() {
   const [claims, setClaims] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
@@ -13,10 +10,10 @@ function ViewClaimsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchClaims = async () => {
+    const fetchUnfinishedClaims = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("/api/claims/all", {
+        const res = await fetch("/api/claims/unfinished", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -27,21 +24,21 @@ function ViewClaimsPage() {
         }
         
         const data = await res.json();
-        console.log("Fetched claims:", data); // Debug log
-        setClaims(data);
+        console.log("Fetched unfinished claims:", data);
+        setClaims(data.claims || []);
       } catch (err) {
-        console.error("Failed to fetch claims:", err);
-        setError("Failed to load claims. Please try again.");
+        console.error("Failed to fetch unfinished claims:", err);
+        setError("Failed to load unfinished claims. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClaims();
+    fetchUnfinishedClaims();
   }, []);
 
   const filteredClaims = claims.filter((claim) => {
-    const companyName = claim.company_name || claim.form_data?.companyName || "";
+    const companyName = claim.client?.companyName || claim.form_data?.companyName || "";
     const startDate = claim.form_data?.claimStartDate || "";
     const endDate = claim.form_data?.claimEndDate || "";
     
@@ -55,8 +52,8 @@ function ViewClaimsPage() {
   if (loading) {
     return (
       <div className="p-6">
-        <h2 className="text-2xl font-semibold mb-4">📁 All Submitted Claims</h2>
-        <p>Loading claims...</p>
+        <h2 className="text-2xl font-semibold mb-4">📝 Unfinished Claims</h2>
+        <p>Loading unfinished claims...</p>
       </div>
     );
   }
@@ -64,7 +61,7 @@ function ViewClaimsPage() {
   if (error) {
     return (
       <div className="p-6">
-        <h2 className="text-2xl font-semibold mb-4">📁 All Submitted Claims</h2>
+        <h2 className="text-2xl font-semibold mb-4">📝 Unfinished Claims</h2>
         <p className="text-red-600">{error}</p>
       </div>
     );
@@ -72,7 +69,7 @@ function ViewClaimsPage() {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">📁 All Submitted Claims</h2>
+      <h2 className="text-2xl font-semibold mb-4">📝 Unfinished Claims</h2>
 
       <input
         type="text"
@@ -83,7 +80,7 @@ function ViewClaimsPage() {
       />
 
       {claims.length === 0 ? (
-        <p>No claims found. Start by creating your first claim!</p>
+        <p>No unfinished claims found. All your claims appear to be complete!</p>
       ) : (
         <table className="w-full border border-gray-300">
           <thead>
@@ -92,7 +89,7 @@ function ViewClaimsPage() {
               <th className="border p-2">Claim Title</th>
               <th className="border p-2">Start Date</th>
               <th className="border p-2">End Date</th>
-              <th className="border p-2">Status</th>
+              <th className="border p-2">Current Step</th>
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
@@ -100,7 +97,7 @@ function ViewClaimsPage() {
             {filteredClaims.map((claim) => (
               <tr key={claim.id}>
                 <td className="border p-2">
-                  {claim.company_name || claim.form_data?.companyName || "—"}
+                  {claim.client?.companyName || claim.form_data?.companyName || "—"}
                 </td>
                 <td className="border p-2">
                   {claim.claim_title || "R&D Claim"}
@@ -112,23 +109,25 @@ function ViewClaimsPage() {
                   {claim.form_data?.claimEndDate || "—"}
                 </td>
                 <td className="border p-2">
-                  {claim.is_draft ? "📝 Draft" : "✅ Complete"}
+                  Step {claim.current_step || 1} of 6
                 </td>
                 <td className="border p-2">
                   <button
                     className="text-blue-600 underline mr-2"
                     onClick={() => navigate(`/claim/${claim.id}`)}
                   >
-                    Edit
+                    Continue
                   </button>
                   <button
-                    className="text-green-600 underline"
+                    className="text-red-600 underline"
                     onClick={() => {
-                      // You can add a view-only mode here later
-                      navigate(`/claim/${claim.id}`);
+                      if (window.confirm("Are you sure you want to delete this unfinished claim?")) {
+                        // Add delete functionality here
+                        console.log("Delete claim:", claim.id);
+                      }
                     }}
                   >
-                    View
+                    Delete
                   </button>
                 </td>
               </tr>
@@ -136,7 +135,7 @@ function ViewClaimsPage() {
             {filteredClaims.length === 0 && claims.length > 0 && (
               <tr>
                 <td colSpan="6" className="p-4 text-center">
-                  No matching claims found.
+                  No matching unfinished claims found.
                 </td>
               </tr>
             )}
@@ -147,4 +146,4 @@ function ViewClaimsPage() {
   );
 }
 
-export default ViewClaimsPage;ault ViewClaimsPage;
+export default UnfinishedClaimsPage;
