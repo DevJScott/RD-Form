@@ -142,17 +142,24 @@ function ClaimApp() {
       const res = await fetch(
         `/api/claims${claimId ? `/${claimId}` : ""}`,
         {
-          method: claimId ? "PATCH" : "POST",
+          method: claimId ? "PUT" : "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ ...data, isComplete: false }),
+          body: JSON.stringify({ 
+            formData: data, 
+            isDraft: true, 
+            currentStep: step,
+            claimTitle: data.companyName ? `${data.companyName} R&D Claim` : 'R&D Claim'
+          }),
         }
       );
 
       const saved = await res.json();
-      if (!claimId && saved.id) setClaimId(saved.id);
+      if (!claimId && saved.claim && saved.claim.id) {
+        setClaimId(saved.claim.id);
+      }
     } catch (err) {
       console.error("Auto-save error:", err);
     }

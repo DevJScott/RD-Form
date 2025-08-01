@@ -63,7 +63,7 @@ const getAllClaims = async (req, res) => {
 // Get user's claims
 const getUserClaims = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const result = await req.app.locals.db.query(
       `SELECT c.*, cl.company_name, cl.contact_name 
        FROM claims c 
@@ -83,7 +83,7 @@ const getUserClaims = async (req, res) => {
 const getClaim = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const result = await req.app.locals.db.query(
       `SELECT c.*, cl.company_name, cl.contact_name 
