@@ -25,7 +25,7 @@ app.use(
     origin: (origin, callback) => {
       console.log("🔍 CORS request from origin:", origin);
       console.log("🔍 Allowed origins:", allowedOrigins);
-      
+
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
@@ -88,7 +88,7 @@ async function startServer() {
   try {
     const client = await pool.connect();
     console.log("✅ PostgreSQL connected");
-    
+
     // Create tables if they don't exist
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -100,7 +100,7 @@ async function startServer() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS clients (
         id SERIAL PRIMARY KEY,
@@ -114,7 +114,7 @@ async function startServer() {
         UNIQUE(user_id, email)
       )
     `);
-    
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS claims (
         id SERIAL PRIMARY KEY,
@@ -129,7 +129,7 @@ async function startServer() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    
+
     client.release();
     console.log("✅ Database tables created/verified");
 

@@ -1,27 +1,16 @@
-
 const express = require("express");
-const {
-  createClaim,
-  getAllClaims,
-  getUserClaims,
-  getUnfinishedClaims,
-  updateClaim,
-  autosaveClaim,
-  deleteClaim,
-  getClaim,
-} = require("../controllers/claimController");
-
-const authenticate = require("../middleware/authMiddleware");
-
 const router = express.Router();
+const claimController = require("../controllers/claimController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.post("/", authenticate, createClaim);
-router.get("/", authenticate, getUserClaims);
-router.get("/all", authenticate, getAllClaims);
-router.get("/unfinished", authenticate, getUnfinishedClaims);
-router.get("/:id", authenticate, getClaim);
-router.patch("/:id", authenticate, updateClaim);
-router.post("/:id/autosave", authenticate, autosaveClaim);
-router.delete("/:id", authenticate, deleteClaim);
+// All routes are protected
+router.use(authMiddleware);
+
+router.post("/", claimController.createClaim);
+router.get("/all", claimController.getAllClaims);
+router.get("/unfinished", claimController.getUnfinishedClaims);
+router.get("/:id", claimController.getClaim);
+router.put("/:id", claimController.updateClaim);
+router.delete("/:id", claimController.deleteClaim);
 
 module.exports = router;
