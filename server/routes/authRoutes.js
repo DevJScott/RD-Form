@@ -19,4 +19,27 @@ router.get("/debug/users", async (req, res) => {
   }
 });
 
+// Debug route to reset password (remove in production)
+router.post("/debug/reset-password", async (req, res) => {
+  const { email, newPassword } = req.body;
+  try {
+    const bcrypt = require("bcryptjs");
+    const pool = req.app.locals.db;
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    
+    const result = await pool.query(
+      'UPDATE users SET password = $1 WHERE email = $2 RETURNING id, email',
+      [passwordHash, email.toLowerCase().trim()]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    res.json({ message: "Password updated successfully", user: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
