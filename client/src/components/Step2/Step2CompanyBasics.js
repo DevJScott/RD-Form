@@ -36,7 +36,7 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
               value={formData.informalCompanyName}
               onChange={(e) => onChange("informalCompanyName", e.target.value)}
               disabled={formData.useFullName}
-              placeholder="e.g. Playcraft"
+              placeholder="e.g. ABC Ltd"
             /><br /><br />
 
             <label>
@@ -77,7 +77,7 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
 
       {/* B. Financial Snapshot */}
       <div className="section-card">
-        <h3>Financial Snapshot (01 Oct 2023 – 30 Sept 2024)</h3>
+        <h3>Financial Snapshot ({formData.claimStartDate && formData.claimEndDate ? `${new Date(formData.claimStartDate).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})} – ${new Date(formData.claimEndDate).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})}` : 'Claim Period'})</h3>
 
         <label>Revenue (£):</label><br />
         <input
@@ -86,7 +86,7 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
           onChange={(e) => onChange("revenue", e.target.value)}
         /><br /><br />
 
-        <label>Total balance sheet assets at 30 Sept 2024 (£):</label><br />
+        <label>Total balance sheet assets at {formData.claimEndDate ? new Date(formData.claimEndDate).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) : 'claim end date'} (£):</label><br />
         <input
           type="number"
           value={formData.balanceSheetAssets}
@@ -120,7 +120,7 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
       <div className="section-card">
         <h3>People & Activity</h3>
 
-        <label>Number of directors at 30 Sept 2024:</label><br />
+        <label>Number of directors at {formData.claimEndDate ? new Date(formData.claimEndDate).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) : 'claim end date'}:</label><br />
         <input
           type="number"
           min="0"
@@ -155,7 +155,7 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
       <div className="section-card">
         <h3>Company Structure</h3>
 
-        <p>At 30 September 2024, was {companyName} part of a group?</p>
+        <p>At {formData.claimEndDate ? new Date(formData.claimEndDate).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'}) : 'the claim end date'}, was {companyName} part of a group?</p>
         <label>
           <input
             type="radio"
