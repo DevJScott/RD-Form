@@ -7,6 +7,7 @@ import ViewClaimsPage from "./pages/ViewClaimsPage";
 import PrivateRoute from "./components/PrivateRoute"; // ✅
 //Import the new page UnfinishedClaimsPage
 import UnfinishedClaimsPage from "./pages/UnfinishedClaimsPage";
+import ClientsPage from "./pages/ClientsPage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/claim/:claimId" element={<PrivateRoute><ClaimApp /></PrivateRoute>} />
         <Route path="/claims" element={<PrivateRoute><ViewClaimsPage /></PrivateRoute>} />
         <Route path="/unfinished-claims" element={<PrivateRoute><UnfinishedClaimsPage /></PrivateRoute>} />
+        <Route path="/clients" element={<PrivateRoute><ClientsPage /></PrivateRoute>} />
 
         {/* Optional fallback route (404) */}
         {/* <Route path="*" element={<NotFound />} /> */}
