@@ -1,23 +1,36 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function ViewClaimsPage() {
   const [claims, setClaims] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClaims = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/claims/user", {
+        const token = localStorage.getItem("token");
+        const res = await fetch("/api/claims", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const data = await res.json();
+        console.log("Fetched claims:", data); // Debug log
         setClaims(data);
       } catch (err) {
         console.error("Failed to fetch claims:", err);
+        setError("Failed to load claims. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -25,12 +38,34 @@ function ViewClaimsPage() {
   }, []);
 
   const filteredClaims = claims.filter((claim) => {
+    const companyName = claim.company_name || claim.form_data?.companyName || "";
+    const startDate = claim.form_data?.claimStartDate || "";
+    const endDate = claim.form_data?.claimEndDate || "";
+    
     return (
-      claim.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.claimStartDate?.includes(searchTerm) ||
-      claim.claimEndDate?.includes(searchTerm)
+      companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      startDate.includes(searchTerm) ||
+      endDate.includes(searchTerm)
     );
   });
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h2 className="text-2xl font-semibold mb-4">📁 All Submitted Claims</h2>
+        <p>Loading claims...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <h2 className="text-2xl font-semibold mb-4">📁 All Submitted Claims</h2>
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -44,44 +79,67 @@ function ViewClaimsPage() {
         className="border px-3 py-2 mb-4 w-full max-w-md"
       />
 
-      <table className="w-full border border-gray-300">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border p-2">Company Name</th>
-            <th className="border p-2">Start Date</th>
-            <th className="border p-2">End Date</th>
-            <th className="border p-2">Status</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredClaims.map((claim) => (
-            <tr key={claim._id}>
-              <td className="border p-2">{claim.companyName || "—"}</td>
-              <td className="border p-2">{claim.claimStartDate || "—"}</td>
-              <td className="border p-2">{claim.claimEndDate || "—"}</td>
-              <td className="border p-2">
-                {claim.isComplete ? "✅ Complete" : "📝 Draft"}
-              </td>
-              <td className="border p-2">
-                <button
-                  className="text-blue-600 underline"
-                  onClick={() => navigate(`/claim/${claim._id}`)}
-                >
-                  View
-                </button>
-              </td>
+      {claims.length === 0 ? (
+        <p>No claims found. Start by creating your first claim!</p>
+      ) : (
+        <table className="w-full border border-gray-300">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border p-2">Company Name</th>
+              <th className="border p-2">Claim Title</th>
+              <th className="border p-2">Start Date</th>
+              <th className="border p-2">End Date</th>
+              <th className="border p-2">Status</th>
+              <th className="border p-2">Actions</th>
             </tr>
-          ))}
-          {filteredClaims.length === 0 && (
-            <tr>
-              <td colSpan="5" className="p-4 text-center">
-                No matching claims found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredClaims.map((claim) => (
+              <tr key={claim.id}>
+                <td className="border p-2">
+                  {claim.company_name || claim.form_data?.companyName || "—"}
+                </td>
+                <td className="border p-2">
+                  {claim.claim_title || "R&D Claim"}
+                </td>
+                <td className="border p-2">
+                  {claim.form_data?.claimStartDate || "—"}
+                </td>
+                <td className="border p-2">
+                  {claim.form_data?.claimEndDate || "—"}
+                </td>
+                <td className="border p-2">
+                  {claim.is_draft ? "📝 Draft" : "✅ Complete"}
+                </td>
+                <td className="border p-2">
+                  <button
+                    className="text-blue-600 underline mr-2"
+                    onClick={() => navigate(`/claim/${claim.id}`)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="text-green-600 underline"
+                    onClick={() => {
+                      // You can add a view-only mode here later
+                      navigate(`/claim/${claim.id}`);
+                    }}
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {filteredClaims.length === 0 && claims.length > 0 && (
+              <tr>
+                <td colSpan="6" className="p-4 text-center">
+                  No matching claims found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
