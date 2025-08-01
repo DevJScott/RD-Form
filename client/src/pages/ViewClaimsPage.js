@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 function ViewClaimsPage() {
   const [claims, setClaims] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,6 +54,59 @@ function ViewClaimsPage() {
       endDate.includes(searchTerm)
     );
   });
+
+  if (loading) return <div>Loading claims...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
+
+  return (
+    <div style={{ padding: "2rem" }}>
+      <h2>📂 All Claims</h2>
+      
+      <input
+        type="text"
+        placeholder="Search by company name or date..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: "1rem", padding: "0.5rem", width: "300px" }}
+      />
+      
+      {filteredClaims.length === 0 ? (
+        <p>No claims found.</p>
+      ) : (
+        <div>
+          {filteredClaims.map((claim, index) => (
+            <div key={claim.id || index} style={{ 
+              border: "1px solid #ccc", 
+              padding: "1rem", 
+              marginBottom: "1rem",
+              borderRadius: "4px"
+            }}>
+              <strong>Company:</strong> {claim.company_name || claim.form_data?.companyName || "Unnamed Company"}<br />
+              <strong>Claim Period:</strong> {claim.form_data?.claimStartDate} – {claim.form_data?.claimEndDate}<br />
+              <strong>Status:</strong> {claim.is_draft ? "📝 Draft" : "✅ Complete"}<br />
+              <strong>Created:</strong> {new Date(claim.created_at).toLocaleDateString()}<br />
+              <button 
+                onClick={() => navigate(`/claim/${claim.id}`)}
+                style={{ marginTop: "0.5rem", padding: "0.3rem 0.8rem" }}
+              >
+                View/Edit
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      
+      <button 
+        onClick={() => navigate("/home")}
+        style={{ marginTop: "1rem", padding: "0.5rem 1rem" }}
+      >
+        ← Back to Home
+      </button>
+    </div>
+  );
+}
+
+export default ViewClaimsPage;
 
   if (loading) {
     return (

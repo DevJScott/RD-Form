@@ -19,7 +19,7 @@ const HomePage = () => {
   <div className="button-group">
     <button onClick={() => navigate("/claim")}>➕ Create New Claim</button>
     <button onClick={() => navigate("/claims")}>📂 View All Claims</button>
-    <button onClick={() => navigate("/unfinished")}>📝 Unfinished Claims</button>
+    <button onClick={() => navigate("/unfinished-claims")}>📝 Unfinished Claims</button>
     <button onClick={() => navigate("/clients")}>👥 Client Info</button>
   </div>
 
