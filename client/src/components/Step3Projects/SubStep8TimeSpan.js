@@ -1,45 +1,40 @@
 import React from "react";
 
-function SubStep8TimeSpan({ formData, onChange }) {
-  const handleDateChange = (field, value) => {
-    onChange(field, value);
-  };
-
+function SubStep8TimeSpan({ formData }) {
   const companyName = formData.companyName || "the company";
+
+  const claimStartDate = new Date(formData.claimStartDate);
+  const claimEndDate = new Date(formData.claimEndDate);
+  const startMonth = claimStartDate.toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
+  const endMonth = claimEndDate.toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <div>
       <h3>Time Span of Technical Problem Solving</h3>
       <p>
-        HMRC needs to know when <strong>{companyName}</strong> was actively working to overcome technical challenges.
-        The activity must fall within the claim period (01 October 2023 to 30 September 2024), but can begin before or finish after it.
+        HMRC needs to know when <strong>{companyName}</strong> was actively
+        working to overcome technical challenges. This activity must fall within
+        the claim period below:
       </p>
 
       <div style={{ marginTop: "20px" }}>
-        <label>
-          Start Month:{" "}
-          <input
-            type="month"
-            value={formData.techWorkStart || "2023-10"}
-            onChange={(e) => handleDateChange("techWorkStart", e.target.value)}
-            min="2023-10"
-            max="2024-09"
-          />
-        </label>
+        <strong>Claim Start:</strong> {startMonth}
       </div>
 
       <div style={{ marginTop: "15px" }}>
-        <label>
-          End Month:{" "}
-          <input
-            type="month"
-            value={formData.techWorkEnd || "2024-09"}
-            onChange={(e) => handleDateChange("techWorkEnd", e.target.value)}
-            min="2023-10"
-            max="2024-09"
-          />
-        </label>
+        <strong>Claim End:</strong> {endMonth}
       </div>
+
+      <p style={{ marginTop: "20px" }}>
+        If your technical work extended beyond this claim period, we’ll capture
+        that separately in Step 4.
+      </p>
     </div>
   );
 }

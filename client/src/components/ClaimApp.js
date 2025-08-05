@@ -103,7 +103,15 @@ function ClaimApp() {
   const [claimId, setClaimId] = useState(routeClaimId || null);
   const [formData, setFormData] = useState(defaultFormData);
 
-  // ✅ Fetch if editing
+  const steps = [
+    { number: 1, title: "Eligibility" },
+    { number: 2, title: "Company Info" },
+    { number: 3, title: "Projects" },
+    { number: 4, title: "Costs" },
+    { number: 5, title: "Descriptions" },
+    { number: 6, title: "Summary" },
+  ];
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!claimId || !token) return;
@@ -118,7 +126,6 @@ function ClaimApp() {
 
         const data = await res.json();
         if (res.ok) {
-          // Merge form_data from PostgreSQL with default form data
           const formData = data.form_data || {};
           setFormData({ ...defaultFormData, ...formData });
           setStep(data.current_step || 1);
@@ -133,28 +140,26 @@ function ClaimApp() {
     fetchClaim();
   }, [claimId]);
 
-  // ✅ Save changes
   const saveDraft = async (data) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-      const res = await fetch(
-        `/api/claims${claimId ? `/${claimId}` : ""}`,
-        {
-          method: claimId ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ 
-            formData: data, 
-            isDraft: true, 
-            currentStep: step,
-            claimTitle: data.companyName ? `${data.companyName} R&D Claim` : 'R&D Claim'
-          }),
-        }
-      );
+      const res = await fetch(`/api/claims${claimId ? `/${claimId}` : ""}`, {
+        method: claimId ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          formData: data,
+          isDraft: true,
+          currentStep: step,
+          claimTitle: data.companyName
+            ? `${data.companyName} R&D Claim`
+            : "R&D Claim",
+        }),
+      });
 
       const saved = await res.json();
       if (!claimId && saved.claim && saved.claim.id) {
@@ -173,31 +178,65 @@ function ClaimApp() {
     });
   };
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 6));
+  const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   return (
     <div className="app-container">
       <nav className="sidebar">
         <h2>Jump to Section</h2>
-        {[1, 2, 3, 4, 5, 6].map((s) => (
+        {steps.map(({ number, title }) => (
           <button
-            key={s}
-            className={`nav-button ${step === s ? "active" : ""}`}
-            onClick={() => setStep(s)}
+            key={number}
+            className={`nav-button ${step === number ? "active" : ""}`}
+            onClick={() => setStep(number)}
           >
-            Step {s}
+            Step {number}: {title}
           </button>
         ))}
       </nav>
 
       <div className="main-content">
-        <ProgressBar currentStep={step} totalSteps={6} />
-        {step === 1 && <Step1Qualification formData={formData} onChange={updateForm} onNext={nextStep} />}
-        {step === 2 && <Step2CompanyBasics formData={formData} onChange={updateForm} onNext={nextStep} onBack={prevStep} />}
-        {step === 3 && <Step3Projects formData={formData} onChange={updateForm} onNext={nextStep} onBack={prevStep} />}
-        {step === 4 && <Step4Costs formData={formData} onChange={updateForm} onNext={nextStep} onBack={prevStep} />}
-        {step === 5 && <Step5Descriptions formData={formData} onChange={updateForm} onNext={nextStep} onBack={prevStep} />}
+        <ProgressBar currentStep={step} totalSteps={steps.length} />
+        {step === 1 && (
+          <Step1Qualification
+            formData={formData}
+            onChange={updateForm}
+            onNext={nextStep}
+          />
+        )}
+        {step === 2 && (
+          <Step2CompanyBasics
+            formData={formData}
+            onChange={updateForm}
+            onNext={nextStep}
+            onBack={prevStep}
+          />
+        )}
+        {step === 3 && (
+          <Step3Projects
+            formData={formData}
+            onChange={updateForm}
+            onNext={nextStep}
+            onBack={prevStep}
+          />
+        )}
+        {step === 4 && (
+          <Step4Costs
+            formData={formData}
+            onChange={updateForm}
+            onNext={nextStep}
+            onBack={prevStep}
+          />
+        )}
+        {step === 5 && (
+          <Step5Descriptions
+            formData={formData}
+            onChange={updateForm}
+            onNext={nextStep}
+            onBack={prevStep}
+          />
+        )}
         {step === 6 && <Step6Summary formData={formData} onBack={prevStep} />}
       </div>
     </div>

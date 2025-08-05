@@ -10,25 +10,30 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
       <h2>Step 2: The Basics</h2>
 
       <p>
-        To determine which R&D tax relief scheme applies to your company, we need some essential background details.
+        To determine which R&D tax relief scheme applies to your company, we
+        need some essential background details.
       </p>
 
       {/* A. Company Identity */}
       <div className="section-card">
         <h3>Company Identity</h3>
 
-        <label>Company Name:</label><br />
+        <label>Company Name:</label>
+        <br />
         <input
           value={formData.companyName}
           onChange={(e) => onChange("companyName", e.target.value)}
           required
-        /><br /><br />
+        />
+        <br />
+        <br />
 
         {formData.companyName && (
           <>
             <p>
-              The registered company name has been entered as <strong>{formData.companyName}</strong>.
-              If you'd like to use a shorter or informal name in the report, enter it below.
+              The registered company name has been entered as{" "}
+              <strong>{formData.companyName}</strong>. If you'd like to use a
+              shorter or informal name in the report, enter it below.
             </p>
 
             <input
@@ -37,7 +42,9 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
               onChange={(e) => onChange("informalCompanyName", e.target.value)}
               disabled={formData.useFullName}
               placeholder="e.g. ABC Ltd"
-            /><br /><br />
+            />
+            <br />
+            <br />
 
             <label>
               <input
@@ -46,17 +53,23 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
                 onChange={(e) => onChange("useFullName", e.target.checked)}
               />{" "}
               No thanks, using our full name is fine
-            </label><br /><br />
+            </label>
+            <br />
+            <br />
           </>
         )}
 
-        <label>Contact Person Name:</label><br />
+        <label>Contact Person Name:</label>
+        <br />
         <input
           value={formData.contactName}
           onChange={(e) => onChange("contactName", e.target.value)}
-        /><br /><br />
+        />
+        <br />
+        <br />
 
-        <label>Company Size:</label><br />
+        <label>Company Size:</label>
+        <br />
         <select
           value={formData.companySize}
           onChange={(e) => onChange("companySize", e.target.value)}
@@ -66,9 +79,12 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
           <option value="Small">Small (under 50 staff)</option>
           <option value="Medium">Medium (under 250 staff)</option>
           <option value="Large">Large (250+ staff)</option>
-        </select><br /><br />
+        </select>
+        <br />
+        <br />
 
-        <label>Industry Sector:</label><br />
+        <label>Industry Sector:</label>
+        <br />
         <input
           value={formData.industry}
           onChange={(e) => onChange("industry", e.target.value)}
@@ -77,37 +93,66 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
 
       {/* B. Financial Snapshot */}
       <div className="section-card">
-        <h3>Financial Snapshot ({formData.claimStartDate && formData.claimEndDate ? `${new Date(formData.claimStartDate).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})} – ${new Date(formData.claimEndDate).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})}` : 'Claim Period'})</h3>
+        <h3>
+          Financial Snapshot (
+          {formData.claimStartDate && formData.claimEndDate
+            ? `${new Date(formData.claimStartDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} – ${new Date(formData.claimEndDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}`
+            : "Claim Period"}
+          )
+        </h3>
 
-        <label>Revenue (£):</label><br />
+        <label>Revenue (£):</label>
+        <br />
         <input
           type="number"
           value={formData.revenue}
           onChange={(e) => onChange("revenue", e.target.value)}
-        /><br /><br />
+        />
+        <br />
+        <br />
 
-        <label>Total balance sheet assets at {formData.claimEndDate ? new Date(formData.claimEndDate).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) : 'claim end date'} (£):</label><br />
+        <label>
+          Total balance sheet assets at{" "}
+          {formData.claimEndDate
+            ? new Date(formData.claimEndDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : "claim end date"}{" "}
+          (£):
+        </label>
+        <br />
         <input
           type="number"
           value={formData.balanceSheetAssets}
           onChange={(e) => onChange("balanceSheetAssets", e.target.value)}
-        /><br /><br />
+        />
+        <br />
+        <br />
 
-        <label>Total trading and operating expenses (£):</label><br />
+        <label>Total trading and operating expenses (£):</label>
+        <br />
         <input
           type="number"
           value={formData.tradingExpenses}
           onChange={(e) => onChange("tradingExpenses", e.target.value)}
-        /><br /><br />
+        />
+        <br />
+        <br />
 
-        <label>Total capitalised R&D expenditure (£):</label><br />
+        <label>Total capitalised R&D expenditure (£):</label>
+        <br />
         <input
           type="number"
           value={formData.capitalisedRAndD}
           onChange={(e) => onChange("capitalisedRAndD", e.target.value)}
-        /><br /><br />
+        />
+        <br />
+        <br />
 
-        <label>Profit or Loss before R&D claim (£):</label><br />
+        <label>Profit or Loss before R&D claim (£):</label>
+        <br />
         <input
           type="text"
           value={formData.profitOrLoss}
@@ -120,33 +165,53 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
       <div className="section-card">
         <h3>People & Activity</h3>
 
-        <label>Number of directors at {formData.claimEndDate ? new Date(formData.claimEndDate).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) : 'claim end date'}:</label><br />
+        <label>
+          Number of directors at{" "}
+          {formData.claimEndDate
+            ? new Date(formData.claimEndDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : "claim end date"}
+          :
+        </label>
+        <br />
         <input
           type="number"
           min="0"
           value={formData.directorCount}
           onChange={(e) => onChange("directorCount", e.target.value)}
-        /><br /><br />
+        />
+        <br />
+        <br />
 
-        <label>Number of full-time staff (excluding directors):</label><br />
+        <label>Number of full-time staff (excluding directors):</label>
+        <br />
         <input
           type="number"
           min="0"
           value={formData.staffCount}
           onChange={(e) => onChange("staffCount", e.target.value)}
-        /><br /><br />
+        />
+        <br />
+        <br />
 
-        <label>External technical subcontractors or consultants used:</label><br />
+        <label>External technical subcontractors or consultants used:</label>
+        <br />
         <input
           type="number"
           min="0"
           value={formData.subcontractorCount}
           onChange={(e) => onChange("subcontractorCount", e.target.value)}
-        /><br /><br />
+        />
+        <br />
+        <br />
 
         {shouldBlock && (
           <p style={{ color: "red", fontWeight: "bold" }}>
-            Based on your answer, the company may not qualify (4–80 staff total). Please check eligibility before continuing.
+            Based on your answer, the company may not qualify (4–80 staff
+            total). Please check eligibility before continuing.
           </p>
         )}
       </div>
@@ -155,7 +220,17 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
       <div className="section-card">
         <h3>Company Structure</h3>
 
-        <p>At {formData.claimEndDate ? new Date(formData.claimEndDate).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'}) : 'the claim end date'}, was {companyName} part of a group?</p>
+        <p>
+          At{" "}
+          {formData.claimEndDate
+            ? new Date(formData.claimEndDate).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })
+            : "the claim end date"}
+          , was {companyName} part of a group?
+        </p>
         <label>
           <input
             type="radio"
@@ -165,7 +240,8 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
             onChange={(e) => onChange("partOfGroup", e.target.value)}
           />{" "}
           Yes
-        </label><br />
+        </label>
+        <br />
         <label>
           <input
             type="radio"
@@ -175,9 +251,49 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
             onChange={(e) => onChange("partOfGroup", e.target.value)}
           />{" "}
           No
-        </label><br /><br />
+        </label>
+        <br />
+        <br />
 
-        <p>Did {companyName} have any connected companies during the claim period?</p>
+        {formData.partOfGroup === "Yes" && (
+          <div style={{ marginBottom: "20px" }}>
+            <label>Total number of employees in the group:</label>
+            <br />
+            <input
+              type="number"
+              min="0"
+              value={formData.groupEmployeeCount || ""}
+              onChange={(e) => onChange("groupEmployeeCount", e.target.value)}
+            />
+            <br />
+            <br />
+
+            <label>Total group revenue (£):</label>
+            <br />
+            <input
+              type="number"
+              min="0"
+              value={formData.groupRevenue || ""}
+              onChange={(e) => onChange("groupRevenue", e.target.value)}
+            />
+            <br />
+            <br />
+
+            <label>Total group expenditure (£):</label>
+            <br />
+            <input
+              type="number"
+              min="0"
+              value={formData.groupExpenditure || ""}
+              onChange={(e) => onChange("groupExpenditure", e.target.value)}
+            />
+          </div>
+        )}
+
+        <p>
+          Did {companyName} have any connected companies during the claim
+          period?
+        </p>
         <label>
           <input
             type="radio"
@@ -187,7 +303,8 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
             onChange={(e) => onChange("hasConnectedCompanies", e.target.value)}
           />{" "}
           Yes
-        </label><br />
+        </label>
+        <br />
         <label>
           <input
             type="radio"
@@ -203,7 +320,10 @@ function Step2CompanyBasics({ formData, onChange, onNext, onBack }) {
       {/* Buttons */}
       <div style={{ marginTop: "20px" }}>
         <button onClick={onBack}>Back</button>{" "}
-        <button onClick={onNext} disabled={!formData.companyName || !formData.companySize}>
+        <button
+          onClick={onNext}
+          disabled={!formData.companyName || !formData.companySize}
+        >
           Next
         </button>
       </div>

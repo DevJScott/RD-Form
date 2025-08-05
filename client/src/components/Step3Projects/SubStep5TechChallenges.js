@@ -12,7 +12,7 @@ function SubStep5TechChallenges({ formData, onChange }) {
     }));
   };
 
-  const allChallenges = {
+  const allUncertainties = {
     software: [
       "Trying to find, diagnose and rectify race conditions",
       "Trying to find, diagnose and rectify intermittent faults",
@@ -69,7 +69,10 @@ function SubStep5TechChallenges({ formData, onChange }) {
   const handleToggle = (value) => {
     const selected = formData.techChallenges || [];
     if (selected.includes(value)) {
-      onChange("techChallenges", selected.filter((v) => v !== value));
+      onChange(
+        "techChallenges",
+        selected.filter((v) => v !== value),
+      );
     } else if (selected.length < 5) {
       onChange("techChallenges", [...selected, value]);
     }
@@ -92,11 +95,17 @@ function SubStep5TechChallenges({ formData, onChange }) {
 
   return (
     <div>
-      <h3>Technical Challenges</h3>
+      <h3>Technical Uncertainties</h3>
       <p>
-        The technical difficulties <strong>{companyName}</strong> faced in its projects are key to demonstrating to HMRC that the claim is valid. The company doesn’t need to have overcome the issue — just be actively trying to solve it.
+        The technical <strong>uncertainties</strong> {companyName} faced in its
+        projects are key to demonstrating to HMRC that the claim is valid. The
+        company doesn’t need to have overcome the issue — just be actively
+        trying to solve it.
       </p>
-      <p><strong>Select up to 5 technical difficulties</strong> {companyName} faced:</p>
+      <p>
+        <strong>Select up to 5 technical uncertainties</strong> {companyName}{" "}
+        faced:
+      </p>
 
       <label style={{ display: "block", marginBottom: "15px" }}>
         <input
@@ -104,12 +113,13 @@ function SubStep5TechChallenges({ formData, onChange }) {
           checked={formData.noTechChallenges || false}
           onChange={(e) => handleNoChallenges(e.target.checked)}
         />{" "}
-        {companyName} encountered no significant technical difficulties during the claim period.
+        {companyName} encountered no significant technical uncertainties during
+        the claim period.
       </label>
 
       {!formData.noTechChallenges && (
         <>
-          {Object.entries(allChallenges).map(([category, items]) => (
+          {Object.entries(allUncertainties).map(([category, items]) => (
             <div key={category} style={{ marginBottom: "25px" }}>
               <div
                 onClick={() => toggleCategory(category)}
@@ -120,14 +130,17 @@ function SubStep5TechChallenges({ formData, onChange }) {
                   marginBottom: "6px",
                 }}
               >
-                {category.charAt(0).toUpperCase() + category.slice(1)} Challenges{" "}
-                {expandedCategories[category] ? "▲" : "▼"}
+                {category.charAt(0).toUpperCase() + category.slice(1)}{" "}
+                Uncertainties {expandedCategories[category] ? "▲" : "▼"}
               </div>
 
               {expandedCategories[category] && (
                 <div style={{ paddingLeft: "10px", marginTop: "8px" }}>
                   {items.map((item) => (
-                    <label key={item} style={{ display: "block", marginBottom: "6px" }}>
+                    <label
+                      key={item}
+                      style={{ display: "block", marginBottom: "6px" }}
+                    >
                       <input
                         type="checkbox"
                         checked={isChecked(item)}
@@ -140,7 +153,11 @@ function SubStep5TechChallenges({ formData, onChange }) {
                     Other:
                     <input
                       type="text"
-                      style={{ width: "100%", padding: "6px", marginTop: "5px" }}
+                      style={{
+                        width: "100%",
+                        padding: "6px",
+                        marginTop: "5px",
+                      }}
                       value={formData[`${category}Other`] || ""}
                       onChange={(e) =>
                         handleOtherChange(`${category}Other`, e.target.value)
