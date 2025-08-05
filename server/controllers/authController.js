@@ -57,6 +57,10 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
   
+  console.log("🔍 LOGIN ATTEMPT:");
+  console.log("📧 Email received:", email);
+  console.log("🔑 Password received:", password ? "[PROVIDED]" : "[MISSING]");
+  
   // Input validation
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
@@ -66,24 +70,40 @@ exports.loginUser = async (req, res) => {
     const pool = req.app.locals.db;
     const normalizedEmail = email.toLowerCase().trim();
     
+    console.log("🔄 Normalized email:", normalizedEmail);
+    
     // Find user
     const result = await pool.query(
       'SELECT id, email, password, name, role FROM users WHERE email = $1',
       [normalizedEmail]
     );
     
+    console.log("📊 Rows found:", result.rows.length);
+    
     if (result.rows.length === 0) {
+      console.log("❌ No user found with email:", normalizedEmail);
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const user = result.rows[0];
+    console.log("👤 User found:", { 
+      id: user.id, 
+      email: user.email, 
+      name: user.name, 
+      hasPassword: !!user.password 
+    });
 
     // Check password
+    console.log("🔐 Checking password...");
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("🔐 Password match:", isMatch);
     
     if (!isMatch) {
+      console.log("❌ Password mismatch for user:", user.email);
       return res.status(401).json({ message: "Invalid credentials" });
     }
+
+    console.log("✅ Login successful for user:", user.email);
 
     // Generate JWT
     const token = jwt.sign(
@@ -102,7 +122,7 @@ exports.loginUser = async (req, res) => {
       }
     });
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("💥 Login error:", err);
     res.status(500).json({ error: "Login failed" });
   }
 };
