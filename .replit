@@ -7,6 +7,7 @@ channel = "stable-25_05"
 
 [deployment]
 run = ["sh", "-c", "cd server && node index.js"]
+build = ["sh", "-c", "cd client && npm run build"]
 
 [workflows]
 runButton = "Start Server"
