@@ -23,6 +23,7 @@ function App() {
         <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
         <Route path="/claim" element={<PrivateRoute><ClaimApp /></PrivateRoute>} />
         <Route path="/claim/:claimId" element={<PrivateRoute><ClaimApp /></PrivateRoute>} />
+        <Route path="/claim/edit/:claimId" element={<PrivateRoute><ClaimApp /></PrivateRoute>} />
         <Route path="/claims" element={<PrivateRoute><ViewClaimsPage /></PrivateRoute>} />
         <Route path="/unfinished-claims" element={<PrivateRoute><UnfinishedClaimsPage /></PrivateRoute>} />
         <Route path="/clients" element={<PrivateRoute><ClientsPage /></PrivateRoute>} />
