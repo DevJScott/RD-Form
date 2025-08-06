@@ -6,7 +6,7 @@ const {
   getAllClients,
   getClientById,
   updateClient,
-  deleteClient
+  deleteClient,
 } = require("../controllers/clientController");
 
 // All routes are protected
@@ -15,16 +15,16 @@ router.use(authMiddleware);
 // Create a new client
 router.post("/", createClient);
 
-// Get all clients for a user
+// Get all clients for the authenticated user
 router.get("/", getAllClients);
 
 // Get a specific client by ID
-router.get("/:id([0-9]+)", getClientById);
+router.get("/:id", getClientById);
 
 // Update a client
-router.put("/:id([0-9]+)", updateClient);
+router.put("/:id", updateClient);
 
 // Delete a client
-router.delete("/:id([0-9]+)", deleteClient);
+router.delete("/:id", deleteClient);
 
 module.exports = router;
