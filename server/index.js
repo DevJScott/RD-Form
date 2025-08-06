@@ -1,7 +1,7 @@
 const express = require("express");
-const { Pool } = require("pg");
 const cors = require("cors");
 const path = require("path");
+const { Pool } = require("pg");
 require("dotenv").config({ path: path.resolve(__dirname, '../.env') });
 
 // ✅ Import your route handlers
@@ -37,7 +37,8 @@ app.use(
 );
 
 // ✅ Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ✅ API routes
 app.use("/api/claims", claimRoutes);
@@ -90,7 +91,7 @@ if (databaseUrl) {
     keepAliveInitialDelayMillis: 10000,
     allowExitOnIdle: false
   });
-  
+
   // Handle pool errors
   pool.on('error', (err) => {
     console.error('PostgreSQL pool error:', err);
@@ -153,7 +154,9 @@ async function startServer() {
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Server is running on port ${PORT}`);
+      console.log(`✅ Server running on port ${PORT}`);
+      console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`✅ Database connected: ${pool ? 'Yes' : 'No'}`);
     });
   } catch (err) {
     console.error("❌ PostgreSQL connection error:", err);
