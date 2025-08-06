@@ -62,15 +62,19 @@ exports.loginUser = async (req, res) => {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
+  let client;
   try {
     const pool = req.app.locals.db;
     const normalizedEmail = email.toLowerCase().trim();
     
-    // Find user
-    const result = await pool.query(
-      'SELECT id, email, password, name, role FROM users WHERE email = $1',
-      [normalizedEmail]
-    );
+    // Get a dedicated client from the pool with timeout
+    client = await pool.connect();
+    
+    // Find user with timeout
+    const result = await Promise.race([
+      client.query('SELECT id, email, password, name, role FROM users WHERE email = $1', [normalizedEmail]),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Database query timeout')), 5000))
+    ]);
     
     if (result.rows.length === 0) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -103,6 +107,19 @@ exports.loginUser = async (req, res) => {
     });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ error: "Login failed" });
+    
+    // Ensure we always return JSON, never HTML
+    if (!res.headersSent) {
+      if (err.message === 'Database query timeout') {
+        res.status(503).json({ error: "Database temporarily unavailable. Please try again." });
+      } else {
+        res.status(500).json({ error: "Login failed. Please try again." });
+      }
+    }
+  } finally {
+    // Always release the client back to the pool
+    if (client) {
+      client.release();
+    }
   }
 };

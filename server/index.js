@@ -47,6 +47,14 @@ app.use("/api/auth", authRoutes);
 // ✅ Serve React frontend (built version)
 app.use(express.static(path.join(__dirname, "../client/build")));
 
+// ✅ Global error handler for API routes
+app.use('/api/*', (err, req, res, next) => {
+  console.error('API Error:', err);
+  if (!res.headersSent) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
@@ -73,9 +81,19 @@ let pool;
 if (databaseUrl) {
   pool = new Pool({
     connectionString: databaseUrl,
-    max: 10,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    max: 20,
+    min: 2,
+    idleTimeoutMillis: 60000,
+    connectionTimeoutMillis: 10000,
+    acquireTimeoutMillis: 10000,
+    keepAlive: true,
+    keepAliveInitialDelayMillis: 10000,
+    allowExitOnIdle: false
+  });
+  
+  // Handle pool errors
+  pool.on('error', (err) => {
+    console.error('PostgreSQL pool error:', err);
   });
 } else {
   console.error("❌ DATABASE_URL environment variable is not set!");
