@@ -41,9 +41,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ✅ API routes
-app.use("/api/claims", claimRoutes);
-app.use("/api/clients", clientRoutes);
-app.use("/api/auth", authRoutes);
+try {
+  app.use("/api/claims", claimRoutes);
+  app.use("/api/clients", clientRoutes);
+  app.use("/api/auth", authRoutes);
+  console.log("✅ Routes registered successfully");
+} catch (routeError) {
+  console.error("❌ Route registration error:", routeError);
+  process.exit(1);
+}
 
 // ✅ Serve React frontend (built version)
 app.use(express.static(path.join(__dirname, "../client/build")));
