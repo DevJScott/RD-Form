@@ -77,10 +77,10 @@ const getUserClaims = async (req, res) => {
   try {
     const userId = req.user.userId;
     const result = await req.app.locals.db.query(
-      `SELECT c.*, cl.company_name, cl.contact_name 
-       FROM claims c 
-       LEFT JOIN clients cl ON c.client_id = cl.id 
-       WHERE c.user_id = $1 
+      `SELECT c.*, cl.company_name, cl.contact_name
+       FROM claims c
+       LEFT JOIN clients cl ON c.client_id = cl.id
+       WHERE c.user_id = $1
        ORDER BY c.updated_at DESC`,
       [userId],
     );
@@ -98,9 +98,9 @@ const getClaim = async (req, res) => {
     const userId = req.user.userId;
 
     const result = await req.app.locals.db.query(
-      `SELECT c.*, cl.company_name, cl.contact_name 
-       FROM claims c 
-       LEFT JOIN clients cl ON c.client_id = cl.id 
+      `SELECT c.*, cl.company_name, cl.contact_name
+       FROM claims c
+       LEFT JOIN clients cl ON c.client_id = cl.id
        WHERE c.id = $1 AND c.user_id = $2`,
       [id, userId],
     );
@@ -165,10 +165,10 @@ const updateClaim = async (req, res) => {
 
     const pool = req.app.locals.db;
     const result = await pool.query(
-      `UPDATE claims 
-       SET form_data = $1, is_draft = $2, current_step = $3, claim_title = $4, 
-           last_saved_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP 
-       WHERE id = $5 AND user_id = $6 
+      `UPDATE claims
+       SET form_data = $1, is_draft = $2, current_step = $3, claim_title = $4,
+           last_saved_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $5 AND user_id = $6
        RETURNING *`,
       [
         JSON.stringify(formData),
@@ -209,9 +209,9 @@ const autosaveClaim = async (req, res) => {
 
     const pool = req.app.locals.db;
     const result = await pool.query(
-      `UPDATE claims 
-       SET form_data = $1, current_step = $2, last_saved_at = CURRENT_TIMESTAMP 
-       WHERE id = $3 AND user_id = $4 
+      `UPDATE claims
+       SET form_data = $1, current_step = $2, last_saved_at = CURRENT_TIMESTAMP
+       WHERE id = $3 AND user_id = $4
        RETURNING id, last_saved_at`,
       [JSON.stringify(formData), currentStep || 1, id, userId],
     );

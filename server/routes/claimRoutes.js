@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
 const {
   createClaim,
   getAllClaims,
@@ -10,6 +11,9 @@ const {
   getDraftClaims,
   getSubmittedClaims
 } = require("../controllers/claimController");
+
+// All routes are protected
+router.use(authMiddleware);
 
 // Create a new claim
 router.post("/", createClaim);

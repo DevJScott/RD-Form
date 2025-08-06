@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
 const {
   createClient,
   getAllClients,
@@ -7,6 +8,9 @@ const {
   updateClient,
   deleteClient
 } = require("../controllers/clientController");
+
+// All routes are protected
+router.use(authMiddleware);
 
 // Create a new client
 router.post("/", createClient);
