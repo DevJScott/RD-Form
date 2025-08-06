@@ -11,17 +11,27 @@ function Step1Qualification({ formData, onChange, onNext }) {
     onChange(e.target.name, e.target.value);
   };
 
-  const allAnswered = [
-    "isLimitedCompany",
-    "paysCorpTax",
-    "inAdministration",
-    "inLiquidation",
-    "accountsPreparedOnGoingConcern",
-    "claimStartDate",
-    "claimEndDate",
-    "hasClaimedBefore",
-    "hasNotifiedHMRC"
-  ].every((key) => formData[key] !== "") && formData.understandsGoingConcernWarning;
+  const allAnswered =
+    [
+      "isLimitedCompany",
+      "paysCorpTax",
+      "inAdministration",
+      "inLiquidation",
+      "accountsPreparedOnGoingConcern",
+      "claimStartDate",
+      "claimEndDate",
+      "hasClaimedBefore",
+      "hasNotifiedHMRC",
+    ].every((key) => formData[key] !== "") &&
+    formData.understandsGoingConcernWarning;
+
+  // ❌ Disqualification conditions
+  const isDisqualified =
+    formData.isLimitedCompany === "No" ||
+    formData.paysCorpTax === "No" ||
+    formData.inAdministration === "Yes" ||
+    formData.inLiquidation === "Yes" ||
+    formData.accountsPreparedOnGoingConcern === "No";
 
   return (
     <div className="step-wrapper">
@@ -40,7 +50,9 @@ function Step1Qualification({ formData, onChange, onNext }) {
               name="isLimitedCompany"
               value="Yes"
               checked={formData.isLimitedCompany === "Yes"}
-              onChange={(e) => handleRadioChange("isLimitedCompany", e.target.value)}
+              onChange={(e) =>
+                handleRadioChange("isLimitedCompany", e.target.value)
+              }
             />
             <label htmlFor="isLimitedCompanyYes">Yes</label>
           </div>
@@ -51,10 +63,17 @@ function Step1Qualification({ formData, onChange, onNext }) {
               name="isLimitedCompany"
               value="No"
               checked={formData.isLimitedCompany === "No"}
-              onChange={(e) => handleRadioChange("isLimitedCompany", e.target.value)}
+              onChange={(e) =>
+                handleRadioChange("isLimitedCompany", e.target.value)
+              }
             />
             <label htmlFor="isLimitedCompanyNo">No</label>
           </div>
+          {formData.isLimitedCompany === "No" && (
+            <p className="field-warning">
+              You must be a Limited Company to be eligible for R&D Tax Relief.
+            </p>
+          )}
         </div>
 
         {/* Corporation Tax */}
@@ -82,16 +101,42 @@ function Step1Qualification({ formData, onChange, onNext }) {
             />
             <label htmlFor="paysCorpTaxNo">No</label>
           </div>
+          {formData.paysCorpTax === "No" && (
+            <p className="field-warning">
+              You must be subject to UK Corporation Tax to be eligible for R&D
+              Tax Relief.
+            </p>
+          )}
         </div>
 
         {/* Other Yes/No questions */}
         {[
-          { label: "Is the company in administration?", name: "inAdministration" },
-          { label: "Is the company in liquidation?", name: "inLiquidation" },
-          { label: "Are the accounts prepared on a going concern basis?", name: "accountsPreparedOnGoingConcern" },
-          { label: "Has the company claimed R&D tax relief before?", name: "hasClaimedBefore" },
-          { label: "Has the company notified HMRC about an R&D claim?", name: "hasNotifiedHMRC" },
-        ].map(({ label, name }) => (
+          {
+            label: "Is the company in administration?",
+            name: "inAdministration",
+            warning:
+              "You cannot be in administration to be eligible for R&D Tax Relief.",
+          },
+          {
+            label: "Is the company in liquidation?",
+            name: "inLiquidation",
+            warning:
+              "You cannot be in liquidation to be eligible for R&D Tax Relief.",
+          },
+          {
+            label: "Are the accounts prepared on a going concern basis?",
+            name: "accountsPreparedOnGoingConcern",
+            warning: "Accounts must be prepared on a Going Concern basis.",
+          },
+          {
+            label: "Has the company claimed R&D tax relief before?",
+            name: "hasClaimedBefore",
+          },
+          {
+            label: "Has the company notified HMRC about an R&D claim?",
+            name: "hasNotifiedHMRC",
+          },
+        ].map(({ label, name, warning }) => (
           <div className="form-group" key={name}>
             <label>{label}</label>
             <div className="radio-group">
@@ -116,12 +161,17 @@ function Step1Qualification({ formData, onChange, onNext }) {
               />
               <label htmlFor={`${name}No`}>No</label>
             </div>
+            {warning &&
+              formData[name] ===
+                (name === "accountsPreparedOnGoingConcern" ? "No" : "Yes") && (
+                <p className="field-warning">{warning}</p>
+              )}
           </div>
         ))}
 
-        {/* Claim Period */}
+        {/* Accounting Period */}
         <div className="form-group">
-          <label>Claim Start Date</label>
+          <label>Accounting Period Start Date</label>
           <input
             type="date"
             name="claimStartDate"
@@ -131,7 +181,7 @@ function Step1Qualification({ formData, onChange, onNext }) {
         </div>
 
         <div className="form-group">
-          <label>Claim End Date</label>
+          <label>Accounting Period End Date</label>
           <input
             type="date"
             name="claimEndDate"
@@ -151,9 +201,17 @@ function Step1Qualification({ formData, onChange, onNext }) {
             I understand the going concern condition
           </label>
         </div>
+
+        {/* ❌ Disqualification Banner */}
+        {isDisqualified && (
+          <div className="disqualify-banner">
+            🚫 Based on your answers, your company is not eligible for R&D Tax
+            Relief.
+          </div>
+        )}
       </div>
 
-      <button onClick={onNext} disabled={!allAnswered}>
+      <button onClick={onNext} disabled={!allAnswered || isDisqualified}>
         Next
       </button>
     </div>

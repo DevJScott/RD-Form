@@ -1,9 +1,46 @@
+/* ====== App Container Styling ====== */
 .App {
+  text-align: center;
+  min-height: 100vh;
+  background-color: var(--lexmore-light);
+  font-family: var(--font-body);
+  color: #333;
+}
+
+/* ====== Optional: App Header for Home Page / Logo Placement ====== */
+.App-header {
+  background-color: var(--lexmore-dark);
+  color: white;
+  padding: 60px 20px;
   text-align: center;
 }
 
+.App-header h1 {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.App-header p {
+  font-size: 1.1rem;
+  margin-top: 12px;
+}
+
+/* ====== Link Styling ====== */
+.App-link {
+  color: var(--lexmore-red);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.App-link:hover {
+  text-decoration: underline;
+}
+
+/* ====== Logo (Optional) ====== */
 .App-logo {
-  height: 40vmin;
+  height: 80px;
+  margin-bottom: 20px;
   pointer-events: none;
 }
 
@@ -13,25 +50,11 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

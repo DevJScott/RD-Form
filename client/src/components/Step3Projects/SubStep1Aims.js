@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 
 function SubStep1Aims({ formData, onChange }) {
-  const [expanded, setExpanded] = useState({});
+  const [expanded, setExpanded] = useState({
+    marketObjectives: true, // optional default open
+  });
 
   const toggle = (groupKey) => {
     setExpanded((prev) => ({
@@ -13,7 +15,10 @@ function SubStep1Aims({ formData, onChange }) {
   const handleCheckbox = (group, option) => {
     const current = formData[group] || [];
     if (current.includes(option)) {
-      onChange(group, current.filter((item) => item !== option));
+      onChange(
+        group,
+        current.filter((item) => item !== option),
+      );
     } else {
       onChange(group, [...current, option]);
     }
@@ -98,22 +103,31 @@ function SubStep1Aims({ formData, onChange }) {
     },
   ];
 
+  const formatDate = (dateStr) =>
+    dateStr
+      ? new Date(dateStr).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      : "dd/mm/yyyy";
+
   return (
     <div>
-      <h3>Project Aims</h3>
+      <h2>Step 3: Projects</h2>
+      <h4>Section 1 of 10</h4>
+
       <p>
         Now that we’ve covered off the basics, we need you to tell us about the
         work that {formData.companyName || "the company"} did between{" "}
-        <strong>01 October 2023 and 30 September 2024</strong>.
+        <strong>{formatDate(formData.claimStartDate)}</strong> and{" "}
+        <strong>{formatDate(formData.claimEndDate)}</strong>.
       </p>
 
       <p>
-        To qualify for R&D tax relief, you must demonstrate that:
-        <ul>
-          <li>There was at least one technical goal</li>
-          <li>There was at least one significant technological or scientific difficulty</li>
-          <li>People with appropriate skills and experience worked to overcome it</li>
-        </ul>
+        Select up to 4 objectives of the commercial or technical work that{" "}
+        {formData.companyName || "the company"} completed this accounting
+        period.
       </p>
 
       <hr />
@@ -134,7 +148,10 @@ function SubStep1Aims({ formData, onChange }) {
           {expanded[key] && (
             <div style={{ paddingLeft: "10px", marginBottom: "10px" }}>
               {options.map((item) => (
-                <label key={item} style={{ display: "block", marginBottom: "5px" }}>
+                <label
+                  key={item}
+                  style={{ display: "block", marginBottom: "5px" }}
+                >
                   <input
                     type="checkbox"
                     checked={(formData[key] || []).includes(item)}
@@ -158,8 +175,9 @@ function SubStep1Aims({ formData, onChange }) {
         </div>
       ))}
 
-      {/* ✅ Eligibility Message */}
-      <div style={{ marginTop: "20px", padding: "10px", border: "1px solid #ccc" }}>
+      <div
+        style={{ marginTop: "20px", padding: "10px", border: "1px solid #ccc" }}
+      >
         {[
           ...(formData.productObjectives || []),
           ...(formData.processObjectives || []),
@@ -169,14 +187,18 @@ function SubStep1Aims({ formData, onChange }) {
           ...(formData.financeObjectives || []),
         ].length > 0 ? (
           <p>
-            ✅ Based on the project aims selected, the work {formData.companyName || "the company"} carried out between{" "}
-            <strong>01 October 2023 and 30 September 2024</strong> may be eligible for R&D tax relief.
-            The activities align with HMRC’s expectations for commercial and technical advancement.
+            ✅ Based on the project aims selected, the work{" "}
+            {formData.companyName || "the company"} carried out between{" "}
+            <strong>{formatDate(formData.claimStartDate)}</strong> and{" "}
+            <strong>{formatDate(formData.claimEndDate)}</strong> may be eligible
+            for R&D tax relief. The activities align with HMRC’s expectations
+            for commercial and technical advancement.
           </p>
         ) : (
           <p style={{ color: "red" }}>
-            ⚠️ You haven’t selected any project aims yet. Without a clear commercial or technical goal,
-            the project may not be eligible for R&D tax relief under HMRC guidance.
+            ⚠️ You haven’t selected any project aims yet. Without a clear
+            commercial or technical goal, the project may not be eligible for
+            R&D tax relief under HMRC guidance.
           </p>
         )}
       </div>
@@ -190,11 +212,16 @@ function SubStep1Aims({ formData, onChange }) {
         max="3"
         step="1"
         value={formData.techKnowledgeSlider || 0}
-        onChange={(e) => handleSliderChange("techKnowledgeSlider", e.target.value)}
+        onChange={(e) =>
+          handleSliderChange("techKnowledgeSlider", e.target.value)
+        }
         style={{ width: "100%" }}
       />
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span>Not at all</span><span>A little</span><span>Quite a bit</span><span>Yes, loads!</span>
+        <span>Not at all</span>
+        <span>A little</span>
+        <span>Quite a bit</span>
+        <span>Yes, loads!</span>
       </div>
 
       <h4>Technical Goal — Early Stage Commercialisation</h4>
@@ -204,11 +231,16 @@ function SubStep1Aims({ formData, onChange }) {
         max="3"
         step="1"
         value={formData.earlyCommercialSlider || 0}
-        onChange={(e) => handleSliderChange("earlyCommercialSlider", e.target.value)}
+        onChange={(e) =>
+          handleSliderChange("earlyCommercialSlider", e.target.value)
+        }
         style={{ width: "100%" }}
       />
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span>Not at all</span><span>A little</span><span>Quite a bit</span><span>Yes, loads!</span>
+        <span>Not at all</span>
+        <span>A little</span>
+        <span>Quite a bit</span>
+        <span>Yes, loads!</span>
       </div>
 
       <h4>Technical Goal — Measurable Improvements to Existing Tech</h4>
@@ -218,11 +250,16 @@ function SubStep1Aims({ formData, onChange }) {
         max="3"
         step="1"
         value={formData.techImprovementSlider || 0}
-        onChange={(e) => handleSliderChange("techImprovementSlider", e.target.value)}
+        onChange={(e) =>
+          handleSliderChange("techImprovementSlider", e.target.value)
+        }
         style={{ width: "100%" }}
       />
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span>Not at all</span><span>A little</span><span>Quite a bit</span><span>Yes, loads!</span>
+        <span>Not at all</span>
+        <span>A little</span>
+        <span>Quite a bit</span>
+        <span>Yes, loads!</span>
       </div>
 
       <h4>Technical Goal — Alternative Ways to Achieve the Same Outcome</h4>
@@ -232,11 +269,16 @@ function SubStep1Aims({ formData, onChange }) {
         max="3"
         step="1"
         value={formData.techAlternativeMethodSlider || 0}
-        onChange={(e) => handleSliderChange("techAlternativeMethodSlider", e.target.value)}
+        onChange={(e) =>
+          handleSliderChange("techAlternativeMethodSlider", e.target.value)
+        }
         style={{ width: "100%" }}
       />
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span>Not at all</span><span>A little</span><span>Quite a bit</span><span>Yes, loads!</span>
+        <span>Not at all</span>
+        <span>A little</span>
+        <span>Quite a bit</span>
+        <span>Yes, loads!</span>
       </div>
     </div>
   );
