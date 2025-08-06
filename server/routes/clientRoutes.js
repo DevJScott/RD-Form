@@ -19,12 +19,12 @@ router.post("/", createClient);
 router.get("/", getAllClients);
 
 // Get a specific client by ID
-router.get("/:id([0-9]+)", getClientById);
+router.get("/:id", getClientById);
 
 // Update a client
-router.put("/:id([0-9]+)", updateClient);
+router.put("/:id", updateClient);
 
 // Delete a client
-router.delete("/:id([0-9]+)", deleteClient);
+router.delete("/:id", deleteClient);
 
 module.exports = router;
