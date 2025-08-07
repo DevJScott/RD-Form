@@ -3,17 +3,28 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const {
   createClient,
-  getClients,
+  getAllClients,
   getClientById,
   updateClient,
-  deleteClient,
+  deleteClient
 } = require("../controllers/clientController");
 
-// Apply auth middleware to protected routes
-router.post("/", authMiddleware, createClient);
-router.get("/", authMiddleware, getClients);
-router.get("/:id", authMiddleware, getClientById);
-router.put("/:id", authMiddleware, updateClient);
-router.delete("/:id", authMiddleware, deleteClient);
+// All routes are protected
+router.use(authMiddleware);
+
+// Create a new client
+router.post("/", createClient);
+
+// Get all clients for a user
+router.get("/", getAllClients);
+
+// Get a specific client by ID
+router.get("/:id", getClientById);
+
+// Update a client
+router.put("/:id", updateClient);
+
+// Delete a client
+router.delete("/:id", deleteClient);
 
 module.exports = router;
