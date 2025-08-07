@@ -1,4 +1,3 @@
-
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -7,28 +6,16 @@ const claimController = require("../controllers/claimController");
 // All routes are protected
 router.use(authMiddleware);
 
-// Create a new claim
-router.post("/", claimController.createClaim);
-
-// Get unfinished claims
+// Specific routes first (order matters)
 router.get("/unfinished", claimController.getUnfinishedClaims);
-
-// Get all claims (admin)
-router.get("/all", claimController.getAllClaims);
-
-// Get user's claims
+router.get("/all", claimController.getAllClaims);  
 router.get("/user", claimController.getUserClaims);
 
-// Get a specific claim by ID
+// Dynamic routes last
 router.get("/:id", claimController.getClaim);
-
-// Update a claim
+router.post("/", claimController.createClaim);
 router.put("/:id", claimController.updateClaim);
-
-// Autosave a claim
 router.patch("/:id/autosave", claimController.autosaveClaim);
-
-// Delete a claim
 router.delete("/:id", claimController.deleteClaim);
 
 module.exports = router;

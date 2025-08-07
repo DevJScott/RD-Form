@@ -41,10 +41,14 @@ const pool = new Pool({
 // Make pool available to routes
 app.locals.db = pool;
 
-// API Routes - ensure proper mounting
-app.use("/api/auth", authRoutes);
-app.use("/api/claims", claimRoutes);
-app.use("/api/clients", clientRoutes);
+// Apply routes with proper error handling
+try {
+  app.use("/api/auth", authRoutes);
+  app.use("/api/claims", claimRoutes);
+  app.use("/api/clients", clientRoutes);
+} catch (error) {
+  console.error("Route registration error:", error);
+}
 
 // Serve React frontend
 app.use(express.static(path.join(__dirname, "../client/build")));
