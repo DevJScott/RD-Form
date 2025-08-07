@@ -1,3 +1,4 @@
+
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -9,14 +10,14 @@ router.use(authMiddleware);
 // Create a new claim
 router.post("/", claimController.createClaim);
 
+// Get unfinished claims
+router.get("/unfinished", claimController.getUnfinishedClaims);
+
 // Get all claims (admin)
 router.get("/all", claimController.getAllClaims);
 
 // Get user's claims
-router.get("/", claimController.getUserClaims);
-
-// Get unfinished claims
-router.get("/unfinished", claimController.getUnfinishedClaims);
+router.get("/user", claimController.getUserClaims);
 
 // Get a specific claim by ID
 router.get("/:id", claimController.getClaim);
