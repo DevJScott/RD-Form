@@ -1,4 +1,3 @@
-
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -7,10 +6,10 @@ const {
   getAllClaims,
   getUserClaims,
   getClaim,
-  getUnfinishedClaims,
   updateClaim,
-  autosaveClaim,
-  deleteClaim
+  deleteClaim,
+  getUnfinishedClaims,
+  autosaveClaim
 } = require("../controllers/claimController");
 
 // All routes are protected
@@ -19,7 +18,7 @@ router.use(authMiddleware);
 // Create a new claim
 router.post("/", createClaim);
 
-// Get all claims (admin only)
+// Get all claims (admin)
 router.get("/all", getAllClaims);
 
 // Get user's claims
@@ -29,15 +28,15 @@ router.get("/", getUserClaims);
 router.get("/unfinished", getUnfinishedClaims);
 
 // Get a specific claim by ID
-router.get("/:id", getClaim);
+router.get("/:id([0-9]+)", getClaim);
 
 // Update a claim
-router.put("/:id", updateClaim);
+router.put("/:id([0-9]+)", updateClaim);
 
 // Autosave a claim
-router.patch("/:id/autosave", autosaveClaim);
+router.patch("/:id([0-9]+)/autosave", autosaveClaim);
 
 // Delete a claim
-router.delete("/:id", deleteClaim);
+router.delete("/:id([0-9]+)", deleteClaim);
 
 module.exports = router;
