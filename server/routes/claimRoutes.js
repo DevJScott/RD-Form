@@ -28,15 +28,15 @@ router.get("/", getUserClaims);
 router.get("/unfinished", getUnfinishedClaims);
 
 // Get a specific claim by ID
-router.get("/:id([0-9]+)", getClaim);
+router.get("/:id", getClaim);
 
 // Update a claim
-router.put("/:id([0-9]+)", updateClaim);
+router.put("/:id", updateClaim);
 
 // Autosave a claim
-router.patch("/:id([0-9]+)/autosave", autosaveClaim);
+router.patch("/:id/autosave", autosaveClaim);
 
 // Delete a claim
-router.delete("/:id([0-9]+)", deleteClaim);
+router.delete("/:id", deleteClaim);
 
 module.exports = router;

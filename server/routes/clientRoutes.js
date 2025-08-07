@@ -13,12 +13,12 @@ router.post("/", clientController.createClient);
 router.get("/", clientController.getAllClients);
 
 // Get a specific client by ID
-router.get("/:id([0-9]+)", clientController.getClientById);
+router.get("/:id", clientController.getClientById);
 
 // Update a client
-router.put("/:id([0-9]+)", clientController.updateClient);
+router.put("/:id", clientController.updateClient);
 
 // Delete a client
-router.delete("/:id([0-9]+)", clientController.deleteClient);
+router.delete("/:id", clientController.deleteClient);
 
 module.exports = router;
