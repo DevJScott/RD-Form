@@ -11,14 +11,12 @@ router.use(authMiddleware);
 router.get("/unfinished", claimController.getUnfinishedClaims);
 router.get("/all", claimController.getAllClaims);
 router.get("/user", claimController.getUserClaims);
-
-// POST route for creating claims
 router.post("/", claimController.createClaim);
 
-// Parameterized routes last
-router.get("/:id", claimController.getClaim);
-router.put("/:id", claimController.updateClaim);
-router.patch("/:id/autosave", claimController.autosaveClaim);
-router.delete("/:id", claimController.deleteClaim);
+// Parameterized routes last - ensure proper syntax
+router.get("/:id([0-9]+)", claimController.getClaim);
+router.put("/:id([0-9]+)", claimController.updateClaim);
+router.patch("/:id([0-9]+)/autosave", claimController.autosaveClaim);
+router.delete("/:id([0-9]+)", claimController.deleteClaim);
 
 module.exports = router;
