@@ -5,7 +5,7 @@ const { Pool } = require("pg");
 require("dotenv").config({ path: path.resolve(__dirname, '../.env') });
 
 const authRoutes = require("./routes/authRoutes");
-const claimRoutes = require("./routes/claimRoutes");
+const claimRoutes = require("./routes/claimRoutes");  
 const clientRoutes = require("./routes/clientRoutes");
 
 const app = express();
@@ -41,7 +41,7 @@ const pool = new Pool({
 // Make pool available to routes
 app.locals.db = pool;
 
-// API Routes
+// API Routes - ensure proper mounting
 app.use("/api/auth", authRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/clients", clientRoutes);

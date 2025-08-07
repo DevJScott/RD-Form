@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
+const claimController = require("../controllers/claimController");
 const {
   createClaim,
   getAllClaims,
@@ -10,7 +11,7 @@ const {
   deleteClaim,
   getUnfinishedClaims,
   autosaveClaim
-} = require("../controllers/claimController");
+} = claimController;
 
 // All routes are protected
 router.use(authMiddleware);
